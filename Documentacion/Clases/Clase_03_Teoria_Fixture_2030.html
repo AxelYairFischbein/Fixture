@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 3: Sistemas Distribuidos y Fundamentos NoSQL - Ingeniería de Datos II</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-image: url('assets/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background: #34495e;
+            color: #3498db;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            flex: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #34495e;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: #e8f4f8;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block::before {
+            content: "Ejemplo";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .highlight h4 {
+            color: #c0392b;
+            margin-bottom: 10px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .cap-triangle {
+            width: 300px;
+            height: 260px;
+            margin: 20px auto;
+            position: relative;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .cap-vertex {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .consistency {
+            background: #e74c3c;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .availability {
+            background: #27ae60;
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .partition {
+            background: #f39c12;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .cap-line {
+            position: absolute;
+            height: 2px;
+            background: #34495e;
+            opacity: 0.3;
+        }
+
+        .line1 {
+            width: 200px;
+            top: 60px;
+            left: 50px;
+            transform: rotate(-60deg);
+        }
+
+        .line2 {
+            width: 200px;
+            top: 60px;
+            right: 50px;
+            transform: rotate(60deg);
+        }
+
+        .line3 {
+            width: 180px;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .consistency-models {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .model-card {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .acid-card {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .base-card {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .partition-strategies {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .strategy-card {
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            background: #f8f9fa;
+        }
+
+        .strategy-card h5 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            width: 13.33%; /* 2/15 classes */
+            transition: width 0.3s ease;
+        }
+
+        .nrw-diagram {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .nrw-formula {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .cap-triangle {
+                width: 250px;
+                height: 220px;
+            }
+
+            .consistency-models {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <h2>📚 Navegación</h2>
+            <ul>
+                <li><a href="#objetivos">🎯 Objetivos</a></li>
+                <li><a href="#introduccion">🌐 Sistemas Distribuidos</a></li>
+                <li><a href="#teorema-cap">⚖️ Teorema CAP</a></li>
+                <li><a href="#consistencia">🔄 Modelos de Consistencia</a></li>
+                <li><a href="#acid-base">⚡ ACID vs BASE</a></li>
+                <li><a href="#clustering">🏗️ Clustering y Replicación</a></li>
+                <li><a href="#particionamiento">📊 Particionamiento</a></li>
+                <li><a href="#parametros-nrw">🔢 Parámetros N, R, W</a></li>
+                <li><a href="#escalamiento">📈 Estrategias de Escalamiento</a></li>
+                <li><a href="#tpo">🎯 Hito 3 — Fixture 2030</a></li>
+                <li><a href="#proxima">➡️ Próxima Clase</a></li>
+            </ul>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 21.42%;"></div>
+            </div>
+            <p style="font-size: 0.9em; margin-top: 10px;">Clase 3 de 14</p>
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <h1>Sistemas Distribuidos y Fundamentos NoSQL</h1>
+                <p>Ingeniería de Datos II - Clase 3</p>
+                <p>Teorema CAP, Consistencia, Particionamiento y Escalabilidad</p>
+            </header>
+
+            <section id="objetivos" class="section">
+                <h2><span class="icon">🎯</span>Objetivos de la Clase</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>Comprender sistemas distribuidos</h4>
+                        <p>Entender los desafíos fundamentales de los sistemas distribuidos y por qué surgen las bases de datos NoSQL.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Dominar el Teorema CAP</h4>
+                        <p>Analizar las implicaciones del teorema CAP y cómo afecta el diseño de bases de datos distribuidas.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Modelos de consistencia</h4>
+                        <p>Comparar ACID vs BASE y entender cuándo aplicar cada modelo de consistencia.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Estrategias de particionamiento</h4>
+                        <p>Aprender técnicas de particionamiento y los parámetros N, R, W para configurar consistencia y disponibilidad.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="introduccion" class="section">
+                <h2><span class="icon">🌐</span>Introducción a Sistemas Distribuidos</h2>
+                
+                <h3>¿Qué es un Sistema Distribuido?</h3>
+                <p>Un sistema distribuido es una colección de computadoras independientes que aparecen ante los usuarios como un sistema único y coherente. En el contexto de bases de datos, esto significa que los datos y el procesamiento se distribuyen a través de múltiples nodos o servidores.</p>
+
+                <div class="highlight">
+                    <h4>Definición Formal</h4>
+                    <p>Según Leslie Lamport: "Un sistema distribuido es aquel en el que el fallo de una computadora de la que nunca has oído hablar puede hacer que tu propia computadora sea inutilizable."</p>
+                </div>
+
+                <h3>¿Por qué Sistemas Distribuidos en Bases de Datos?</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🚀 Escalabilidad</h4>
+                        <p>Manejar volúmenes de datos que exceden la capacidad de un solo servidor. Ejemplos: Facebook (2.8 mil millones de usuarios), Google (8.5 mil millones de búsquedas diarias).</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚡ Performance</h4>
+                        <p>Distribuir la carga de trabajo entre múltiples nodos para reducir latencia y aumentar throughput. Paralelización de consultas y operaciones.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🛡️ Disponibilidad</h4>
+                        <p>Eliminar puntos únicos de falla. Si un nodo falla, otros pueden continuar operando. Uptime de 99.99% o superior.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🌍 Distribución Geográfica</h4>
+                        <p>Acercar los datos a los usuarios finales para reducir latencia. CDNs y réplicas regionales.</p>
+                    </div>
+                </div>
+
+                <h3>Desafíos Fundamentales</h3>
+                <div class="code-block">
+1. FALLOS DE RED (Network Partitions)
+   - Las redes pueden fallar impredeciblemente
+   - Los nodos pueden quedar aislados
+   - Imposible distinguir entre nodo lento y nodo caído
+
+2. LATENCIA VARIABLE
+   - Comunicación entre nodos toma tiempo
+   - Latencia puede variar significativamente
+   - Timeouts son difíciles de configurar correctamente
+
+3. CONCURRENCIA DISTRIBUIDA
+   - Múltiples nodos modificando datos simultáneamente
+   - Sincronización es costosa y compleja
+   - Race conditions distribuidas
+
+4. CONSISTENCIA DE DATOS
+   - Mantener datos sincronizados entre nodos
+   - Propagación de cambios toma tiempo
+   - Conflictos de actualización
+
+5. CONSENSO DISTRIBUIDO
+   - Acordar sobre el estado del sistema
+   - Algoritmos como Raft, Paxos
+   - Complejidad exponencial con número de nodos
+                </div>
+
+                <h3>Evolución: De Monolítico a Distribuido</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspecto</th>
+                            <th>Sistema Monolítico</th>
+                            <th>Sistema Distribuido</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Escalabilidad</strong></td>
+                            <td>Vertical (más CPU/RAM)</td>
+                            <td>Horizontal (más servidores)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Punto de Falla</strong></td>
+                            <td>Único (SPOF)</td>
+                            <td>Múltiple (fault-tolerant)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Consistencia</strong></td>
+                            <td>Inmediata (ACID)</td>
+                            <td>Eventual (BASE)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Complejidad</strong></td>
+                            <td>Baja</td>
+                            <td>Alta</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Costo</strong></td>
+                            <td>Hardware especializado caro</td>
+                            <td>Hardware commodity barato</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Latencia</strong></td>
+                            <td>Baja (local)</td>
+                            <td>Variable (red)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="teorema-cap" class="section">
+                <h2><span class="icon">⚖️</span>Teorema CAP (Brewer's Theorem)</h2>
+                
+                <h3>Definición del Teorema</h3>
+                <p>Formulado por Eric Brewer en 2000, el Teorema CAP establece que en un sistema distribuido es imposible garantizar simultáneamente las tres propiedades siguientes:</p>
+
+                <div class="cap-diagram">
+                    <img src="https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https://substack-post-media.s3.amazonaws.com/public/images/a5719abc-51c2-410f-a462-c38dac27813f_800x720.jpeg" 
+                        alt="Diagrama del Teorema CAP mostrando las tres propiedades: Consistency, Availability y Partition Tolerance" 
+                        class="cap-image">
+                </div>
+
+                <h3>Análisis Detallado de cada Propiedad</h3>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🔄 Consistency (Consistencia)</h4>
+                        <p><strong>Definición:</strong> Todos los nodos ven los mismos datos al mismo tiempo. Una lectura recibe la escritura más reciente o un error.</p>
+                        <p><strong>Ejemplo:</strong> Si escribes "saldo = $100" en un nodo, todos los demás nodos deben mostrar inmediatamente "$100" o fallar.</p>
+                        <p><strong>Implicación:</strong> Requiere sincronización entre nodos antes de confirmar operaciones.</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚡ Availability (Disponibilidad)</h4>
+                        <p><strong>Definición:</strong> El sistema permanece operativo 100% del tiempo. Toda solicitud recibe una respuesta (sin garantizar que sea la más reciente).</p>
+                        <p><strong>Ejemplo:</strong> Puedes leer el saldo incluso si algunos nodos están caídos, aunque el valor puede estar desactualizado.</p>
+                        <p><strong>Implicación:</strong> Los nodos deben responder independientemente del estado de otros nodos.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🌐 Partition Tolerance (Tolerancia a Particiones)</h4>
+                        <p><strong>Definición:</strong> El sistema continúa operando a pesar de fallos arbitrarios de comunicación entre nodos.</p>
+                        <p><strong>Ejemplo:</strong> Si la red se divide y algunos nodos no pueden comunicarse, el sistema sigue funcionando.</p>
+                        <p><strong>Implicación:</strong> En sistemas distribuidos reales, las particiones son inevitables.</p>
+                    </div>
+                </div>
+
+                <h3>Combinaciones Posibles (Pick 2)</h3>
+
+                <div class="code-block">
+CP (Consistency + Partition Tolerance)
+├── Ejemplo: MongoDB con escrituras majority
+├── Comportamiento: Durante partición, algunos nodos se vuelven read-only
+├── Ventaja: Datos siempre consistentes
+└── Desventaja: Pérdida de disponibilidad durante particiones
+
+AP (Availability + Partition Tolerance)  
+├── Ejemplo: Cassandra, DynamoDB
+├── Comportamiento: Todos los nodos siguen operando durante particiones
+├── Ventaja: Sistema siempre disponible
+└── Desventaja: Datos pueden estar temporalmente inconsistentes
+
+CA (Consistency + Availability)
+├── Ejemplo: Bases de datos relacionales tradicionales (PostgreSQL, MySQL)
+├── Comportamiento: Perfecta consistencia y disponibilidad
+├── Ventaja: Modelo familiar y predecible
+└── Desventaja: No tolera particiones (no es verdaderamente distribuido)
+                </div>
+
+                <h3>Casos de Uso por Combinación</h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Combinación</th>
+                            <th>Casos de Uso Ideales</th>
+                            <th>Tecnologías Ejemplo</th>
+                            <th>Trade-offs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CP</strong></td>
+                            <td>Sistemas financieros, inventarios, transacciones críticas</td>
+                            <td>MongoDB, Redis Cluster, HBase</td>
+                            <td>Disponibilidad sacrificada por consistencia</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AP</strong></td>
+                            <td>Redes sociales, catálogos, sistemas de recomendación</td>
+                            <td>Cassandra, DynamoDB, CouchDB</td>
+                            <td>Consistencia eventual, posibles conflictos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CA</strong></td>
+                            <td>Aplicaciones tradicionales, sistemas internos</td>
+                            <td>PostgreSQL, MySQL, SQL Server</td>
+                            <td>No escalable horizontalmente</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="highlight">
+                    <h4>⚠️ Aclaración Importante</h4>
+                    <p>El teorema CAP no significa que siempre debes elegir solo 2 de 3. En la práctica, puedes ajustar el nivel de cada propiedad según las necesidades. Por ejemplo, "eventual consistency" vs "strong consistency", o "99.9%" vs "99.99%" de disponibilidad.</p>
+                </div>
+            </section>
+
+            <section id="consistencia" class="section">
+                <h2><span class="icon">🔄</span>Modelos de Consistencia</h2>
+                
+                <h3>Espectro de Consistencia</h3>
+                <p>La consistencia no es binaria (todo o nada), sino que existe un espectro de modelos, cada uno con diferentes garantías y trade-offs:</p>
+
+                <div class="code-block">
+STRONG CONSISTENCY (Consistencia Fuerte)
+├── Linearizability: Operaciones parecen instantáneas y atómicas
+├── Sequential Consistency: Operaciones en orden secuencial global
+└── Causal Consistency: Operaciones causalmente relacionadas mantienen orden
+
+WEAK CONSISTENCY (Consistencia Débil)
+├── Eventual Consistency: Eventualmente todos los nodos convergen
+├── Session Consistency: Consistencia dentro de una sesión de usuario
+└── Monotonic Consistency: Una vez que se ve un valor, no se ven valores anteriores
+                </div>
+
+                <h3>Modelos Principales en Bases de Datos</h3>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🔒 Strong Consistency</h4>
+                        <p><strong>Garantía:</strong> Todas las lecturas reciben la escritura más reciente.</p>
+                        <p><strong>Implementación:</strong> Sincronización antes de confirmar escrituras.</p>
+                        <p><strong>Ejemplo:</strong> Transferencia bancaria debe ser visible inmediatamente en todos los nodos.</p>
+                        <p><strong>Costo:</strong> Mayor latencia, menor disponibilidad.</p>
+                    </div>
+                    <div class="card">
+                        <h4>⏳ Eventual Consistency</h4>
+                        <p><strong>Garantía:</strong> Si no hay nuevas escrituras, eventualmente todos los nodos convergen.</p>
+                        <p><strong>Implementación:</strong> Propagación asíncrona de cambios.</p>
+                        <p><strong>Ejemplo:</strong> Actualización de perfil en red social puede tardar segundos en propagarse.</p>
+                        <p><strong>Costo:</strong> Posibles inconsistencias temporales.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📱 Session Consistency</h4>
+                        <p><strong>Garantía:</strong> Dentro de una sesión, las lecturas son consistentes con las escrituras previas.</p>
+                        <p><strong>Implementación:</strong> Sticky sessions o tokens de consistencia.</p>
+                        <p><strong>Ejemplo:</strong> Usuario ve inmediatamente su propio post, otros pueden tardar.</p>
+                        <p><strong>Costo:</strong> Complejidad en balanceadores de carga.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔗 Causal Consistency</h4>
+                        <p><strong>Garantía:</strong> Operaciones causalmente relacionadas se ven en el mismo orden.</p>
+                        <p><strong>Implementación:</strong> Vector clocks o timestamps lógicos.</p>
+                        <p><strong>Ejemplo:</strong> Si comentas un post, otros ven el post antes que el comentario.</p>
+                        <p><strong>Costo:</strong> Overhead de tracking causal.</p>
+                    </div>
+                </div>
+
+                <h3>Ejemplo Práctico: Red Social</h3>
+                <div class="code-block">
+Escenario: Juan publica una foto y María la comenta
+
+STRONG CONSISTENCY:
+1. Juan publica foto → Espera confirmación de todos los nodos
+2. María ve la foto → Garantizado que es la versión más reciente
+3. María comenta → Espera confirmación de todos los nodos
+4. Otros usuarios ven foto + comentario simultáneamente
+Resultado: Latencia alta, pero perfecta consistencia
+
+EVENTUAL CONSISTENCY:
+1. Juan publica foto → Confirmación inmediata, propagación asíncrona
+2. María ve la foto → Puede ser versión antigua o nueva
+3. María comenta → Confirmación inmediata
+4. Otros usuarios ven cambios gradualmente (segundos/minutos)
+Resultado: Latencia baja, posibles inconsistencias temporales
+
+CAUSAL CONSISTENCY:
+1. Juan publica foto → Propagación con timestamp causal
+2. María ve la foto → Registra dependencia causal
+3. María comenta → Comentario marcado como dependiente de la foto
+4. Otros usuarios ven foto antes que comentario (orden causal preservado)
+Resultado: Balance entre performance y consistencia lógica
+                </div>
+            </section>
+
+            <section id="acid-base" class="section">
+                <h2><span class="icon">⚡</span>ACID vs BASE</h2>
+                
+                <h3>Dos Filosofías Opuestas</h3>
+                <p>ACID y BASE representan dos enfoques fundamentalmente diferentes para el manejo de datos en sistemas distribuidos:</p>
+
+                <div class="consistency-models">
+                    <div class="model-card acid-card">
+                        <h4>🔒 ACID</h4>
+                        <p><strong>Atomicity:</strong> Todo o nada</p>
+                        <p><strong>Consistency:</strong> Estado válido siempre</p>
+                        <p><strong>Isolation:</strong> Transacciones independientes</p>
+                        <p><strong>Durability:</strong> Cambios permanentes</p>
+                        <br>
+                        <p><strong>Filosofía:</strong> "Mejor estar seguro que lamentarse"</p>
+                        <p><strong>Enfoque:</strong> Consistencia sobre disponibilidad</p>
+                    </div>
+                    <div class="model-card base-card">
+                        <h4>🌊 BASE</h4>
+                        <p><strong>Basically Available:</strong> Sistema siempre responde</p>
+                        <p><strong>Soft state:</strong> Estado puede cambiar sin input</p>
+                        <p><strong>Eventual consistency:</strong> Consistencia en el tiempo</p>
+                        <br>
+                        <p><strong>Filosofía:</strong> "Es mejor estar aproximadamente correcto que exactamente equivocado"</p>
+                        <p><strong>Enfoque:</strong> Disponibilidad sobre consistencia</p>
+                    </div>
+                </div>
+
+                <h3>Análisis Detallado: ACID</h3>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>⚛️ Atomicity (Atomicidad)</h4>
+                        <p><strong>Principio:</strong> Las transacciones son indivisibles - se ejecutan completamente o no se ejecutan.</p>
+                        <div class="code-block">
+-- Transferencia bancaria
+BEGIN TRANSACTION;
+UPDATE cuentas SET saldo = saldo - 100 WHERE id = 'cuenta_a';
+UPDATE cuentas SET saldo = saldo + 100 WHERE id = 'cuenta_b';
+COMMIT; -- Solo si ambas operaciones son exitosas
+
+-- Si cualquier operación falla → ROLLBACK automático
+                        </div>
+                        <p><strong>Implementación:</strong> Write-ahead logging (WAL), two-phase commit (2PC)</p>
+                    </div>
+                    <div class="card">
+                        <h4>🎯 Consistency (Consistencia)</h4>
+                        <p><strong>Principio:</strong> La base de datos siempre está en un estado válido según las reglas de negocio.</p>
+                        <div class="code-block">
+-- Reglas de negocio como constraints
+ALTER TABLE cuentas ADD CONSTRAINT saldo_positivo 
+CHECK (saldo >= 0);
+
+-- La transacción falla si viola constraints
+UPDATE cuentas SET saldo = -50 WHERE id = 'cuenta_a';
+-- ERROR: violates check constraint "saldo_positivo"
+                        </div>
+                        <p><strong>Implementación:</strong> Constraints, triggers, validaciones</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔐 Isolation (Aislamiento)</h4>
+                        <p><strong>Principio:</strong> Las transacciones concurrentes no se interfieren entre sí.</p>
+                        <div class="code-block">
+-- Niveles de aislamiento
+READ UNCOMMITTED  -- Dirty reads posibles
+READ COMMITTED    -- Solo datos confirmados
+REPEATABLE READ   -- Mismos datos en múltiples lecturas
+SERIALIZABLE      -- Ejecución secuencial simulada
+
+-- Ejemplo de problema sin aislamiento:
+T1: READ saldo = 100
+T2: UPDATE saldo = 50
+T1: UPDATE saldo = saldo + 10 = 110 (debería ser 60!)
+                        </div>
+                        <p><strong>Implementación:</strong> Locks, MVCC (Multi-Version Concurrency Control)</p>
+                    </div>
+                    <div class="card">
+                        <h4>💾 Durability (Durabilidad)</h4>
+                        <p><strong>Principio:</strong> Una vez confirmada, una transacción persiste permanentemente.</p>
+                        <div class="code-block">
+-- Garantías de durabilidad
+1. Write-ahead logging (WAL)
+2. Force-write to disk antes de COMMIT
+3. Redundancia (RAID, replicación)
+4. Backups regulares
+
+-- Incluso si el servidor se apaga inmediatamente después de COMMIT,
+-- los cambios deben persistir al reiniciar
+                        </div>
+                        <p><strong>Implementación:</strong> WAL, fsync(), replicación síncrona</p>
+                    </div>
+                </div>
+
+                <h3>Análisis Detallado: BASE</h3>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🌐 Basically Available</h4>
+                        <p><strong>Principio:</strong> El sistema garantiza disponibilidad, pero puede tener fallos parciales.</p>
+                        <div class="code-block">
+// Ejemplo: Sistema de comentarios
+// Incluso si algunos nodos están caídos, 
+// los usuarios pueden seguir comentando
+
+if (primary_node.isAvailable()) {
+    return primary_node.addComment(comment);
+} else if (secondary_node.isAvailable()) {
+    return secondary_node.addComment(comment);
+} else {
+    return queue.addToRetryQueue(comment);
+}
+                        </div>
+                        <p><strong>Implementación:</strong> Múltiples réplicas, failover automático, graceful degradation</p>
+                    </div>
+                    <div class="card">
+                        <h4>🌊 Soft State</h4>
+                        <p><strong>Principio:</strong> El estado del sistema puede cambiar sin input externo debido a propagación de cambios.</p>
+                        <div class="code-block">
+// Ejemplo: Contador de likes
+// El valor puede cambiar mientras lo observas
+// debido a propagación de otros nodos
+
+Node A: likes = 100
+Node B: likes = 98  (propagación pendiente)
+Node C: likes = 102 (propagación pendiente)
+
+// Después de un tiempo, todos convergen a 105
+                        </div>
+                        <p><strong>Implementación:</strong> Propagación asíncrona, timestamps, conflict resolution</p>
+                    </div>
+                    <div class="card">
+                        <h4>⏰ Eventual Consistency</h4>
+                        <p><strong>Principio:</strong> Si no hay nuevas actualizaciones, eventualmente todos los nodos tendrán el mismo valor.</p>
+                        <div class="code-block">
+// Ejemplo: Actualización de perfil
+1. Usuario actualiza bio en Node A
+2. Node A confirma inmediatamente
+3. Cambio se propaga asíncronamente a Node B, C, D
+4. Durante propagación: lecturas pueden ver bio antigua
+5. Después de propagación: todas las lecturas ven bio nueva
+
+// Tiempo de convergencia: segundos a minutos
+                        </div>
+                        <p><strong>Implementación:</strong> Vector clocks, merkle trees, anti-entropy protocols</p>
+                    </div>
+                </div>
+
+                <h3>Comparación Práctica</h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspecto</th>
+                            <th>ACID</th>
+                            <th>BASE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Casos de Uso</strong></td>
+                            <td>Sistemas financieros, inventarios, reservas</td>
+                            <td>Redes sociales, catálogos, analytics</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Escalabilidad</strong></td>
+                            <td>Limitada (vertical principalmente)</td>
+                            <td>Excelente (horizontal)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance</strong></td>
+                            <td>Menor (overhead de consistencia)</td>
+                            <td>Mayor (operaciones asíncronas)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Complejidad</strong></td>
+                            <td>Baja (modelo familiar)</td>
+                            <td>Alta (manejo de inconsistencias)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Disponibilidad</strong></td>
+                            <td>Puede verse afectada</td>
+                            <td>Alta (fault-tolerant)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Consistencia</strong></td>
+                            <td>Inmediata y fuerte</td>
+                            <td>Eventual</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="clustering" class="section">
+                <h2><span class="icon">🏗️</span>Clustering y Replicación</h2>
+                
+                <h3>Conceptos Fundamentales</h3>
+                <p>El clustering y la replicación son técnicas complementarias para lograr alta disponibilidad, escalabilidad y durabilidad en sistemas distribuidos.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🏗️ Clustering</h4>
+                        <p><strong>Definición:</strong> Grupo de servidores que trabajan juntos como un sistema único.</p>
+                        <p><strong>Objetivo:</strong> Distribuir carga, eliminar puntos únicos de falla, facilitar escalamiento.</p>
+                        <p><strong>Tipos:</strong> Active-Active, Active-Passive, Load-balanced</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔄 Replicación</h4>
+                        <p><strong>Definición:</strong> Mantener copias idénticas de datos en múltiples ubicaciones.</p>
+                        <p><strong>Objetivo:</strong> Durabilidad, disponibilidad, performance de lecturas.</p>
+                        <p><strong>Tipos:</strong> Síncrona, Asíncrona, Semi-síncrona</p>
+                    </div>
+                </div>
+
+                <h3>Topologías de Clustering</h3>
+
+                <div class="code-block">
+1. ACTIVE-ACTIVE CLUSTER
+   ┌─────────┐    ┌─────────┐    ┌─────────┐
+   │ Node A  │◄──►│ Node B  │◄──►│ Node C  │
+   │(Active) │    │(Active) │    │(Active) │
+   └─────────┘    └─────────┘    └─────────┘
+   
+   Características:
+   - Todos los nodos procesan requests
+   - Load balancer distribuye tráfico
+   - Máximo aprovechamiento de recursos
+   - Complejidad en sincronización
+
+2. ACTIVE-PASSIVE CLUSTER  
+   ┌─────────┐    ┌─────────┐    ┌─────────┐
+   │ Node A  │───►│ Node B  │───►│ Node C  │
+   │(Active) │    │(Standby)│    │(Standby)│
+   └─────────┘    └─────────┘    └─────────┘
+   
+   Características:
+   - Solo un nodo activo a la vez
+   - Failover automático a standby
+   - Recursos subutilizados
+   - Simplicidad en consistencia
+
+3. MASTER-SLAVE CLUSTER
+   ┌─────────┐    ┌─────────┐    ┌─────────┐
+   │ Master  │───►│ Slave 1 │    │ Slave 2 │
+   │(Write)  │    │ (Read)  │    │ (Read)  │
+   └─────────┘    └─────────┘    └─────────┘
+   
+   Características:
+   - Master maneja escrituras
+   - Slaves manejan lecturas
+   - Escalabilidad de lecturas
+   - Write bottleneck en master
+                </div>
+
+                <h3>Tipos de Replicación</h3>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>⚡ Replicación Síncrona</h4>
+                        <p><strong>Proceso:</strong> Escritura espera confirmación de todas las réplicas antes de confirmar al cliente.</p>
+                        <div class="code-block">
+Flujo de escritura síncrona:
+1. Cliente envía escritura a Master
+2. Master envía a todas las réplicas
+3. Master espera ACK de todas las réplicas
+4. Master confirma al cliente
+5. Escritura visible en todas las réplicas
+
+Tiempo total = max(latencia_replica_1, latencia_replica_2, ...)
+                        </div>
+                        <p><strong>Ventajas:</strong> Consistencia fuerte, cero pérdida de datos</p>
+                        <p><strong>Desventajas:</strong> Latencia alta, disponibilidad reducida</p>
+                    </div>
+                    <div class="card">
+                        <h4>🌊 Replicación Asíncrona</h4>
+                        <p><strong>Proceso:</strong> Escritura se confirma inmediatamente, replicación ocurre en background.</p>
+                        <div class="code-block">
+Flujo de escritura asíncrona:
+1. Cliente envía escritura a Master
+2. Master confirma inmediatamente al cliente
+3. Master envía a réplicas en background
+4. Réplicas procesan cuando pueden
+5. Eventual consistency entre réplicas
+
+Tiempo de respuesta = latencia_master únicamente
+                        </div>
+                        <p><strong>Ventajas:</strong> Latencia baja, alta disponibilidad</p>
+                        <p><strong>Desventajas:</strong> Posible pérdida de datos, inconsistencia temporal</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚖️ Replicación Semi-síncrona</h4>
+                        <p><strong>Proceso:</strong> Espera confirmación de un subconjunto de réplicas (quorum).</p>
+                        <div class="code-block">
+Flujo de escritura semi-síncrona (quorum = 2 de 3):
+1. Cliente envía escritura a Master
+2. Master envía a 3 réplicas
+3. Master espera ACK de 2 réplicas (quorum)
+4. Master confirma al cliente
+5. Tercera réplica se actualiza asíncronamente
+
+Balance entre consistencia y performance
+                        </div>
+                        <p><strong>Ventajas:</strong> Balance entre consistencia y performance</p>
+                        <p><strong>Desventajas:</strong> Complejidad de configuración</p>
+                    </div>
+                </div>
+
+                <h3>Ejemplo: Cluster MongoDB Replica Set</h3>
+                <div class="code-block">
+// Configuración de Replica Set con 3 nodos
+// Arquitectura: 1 Primary + 2 Secondary
+
+Configuración inicial:
+rs.initiate({
+  _id: "myReplicaSet",
+  members: [
+    { _id: 0, host: "mongo1:27017", priority: 2 },  // Primary preferido
+    { _id: 1, host: "mongo2:27017", priority: 1 },  // Secondary
+    { _id: 2, host: "mongo3:27017", priority: 1 }   // Secondary
+  ]
+});
+
+Comportamiento normal:
+- mongo1 es Primary (recibe escrituras)
+- mongo2 y mongo3 son Secondary (replican datos)
+- Lecturas pueden ir a cualquier nodo (configurable)
+
+Escenarios de fallo:
+1. Primary (mongo1) falla:
+   - mongo2 o mongo3 se convierte en Primary automáticamente
+   - Elección por mayoría (2 de 3 nodos)
+   - Downtime: ~10-30 segundos
+
+2. Secondary (mongo2) falla:
+   - Sistema sigue operando normalmente
+   - Solo 2 nodos disponibles para elección
+   - Riesgo si falla otro nodo
+
+3. Partición de red:
+   - Si Primary queda aislado → se convierte en Secondary
+   - Mayoría (2 nodos) elige nuevo Primary
+   - Previene split-brain
+
+Configuración de Write Concern:
+db.collection.insertOne(
+  { name: "Juan", email: "juan@email.com" },
+  { writeConcern: { w: "majority", j: true, wtimeout: 5000 } }
+);
+
+// w: "majority" = espera confirmación de mayoría de nodos
+// j: true = espera que se escriba al journal (durabilidad)
+// wtimeout: 5000 = timeout de 5 segundos
+                </div>
+
+                <h3>Patrones Avanzados de Clustering</h3>
+
+                <div class="partition-strategies">
+                    <div class="strategy-card">
+                        <h5>🌍 Multi-Master</h5>
+                        <p><strong>Concepto:</strong> Múltiples nodos pueden aceptar escrituras</p>
+                        <p><strong>Ejemplo:</strong> CouchDB, Riak</p>
+                        <p><strong>Desafío:</strong> Resolución de conflictos</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>🔄 Ring Architecture</h5>
+                        <p><strong>Concepto:</strong> Nodos organizados en anillo lógico</p>
+                        <p><strong>Ejemplo:</strong> Cassandra, Riak</p>
+                        <p><strong>Beneficio:</strong> Distribución uniforme</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>📊 Federated Clusters</h5>
+                        <p><strong>Concepto:</strong> Múltiples clusters coordinados</p>
+                        <p><strong>Ejemplo:</strong> Kubernetes Federation</p>
+                        <p><strong>Uso:</strong> Multi-región, multi-cloud</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>🎯 Consensus-based</h5>
+                        <p><strong>Concepto:</strong> Algoritmos de consenso (Raft, Paxos)</p>
+                        <p><strong>Ejemplo:</strong> etcd, Consul</p>
+                        <p><strong>Garantía:</strong> Consistencia fuerte</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="particionamiento" class="section">
+                <h2><span class="icon">📊</span>Estrategias de Particionamiento</h2>
+                
+                <h3>¿Qué es el Particionamiento?</h3>
+                <p>El particionamiento (sharding) es la técnica de dividir un gran conjunto de datos en fragmentos más pequeños (particiones o shards) que se distribuyen a través de múltiples nodos. Es fundamental para lograr escalabilidad horizontal.</p>
+
+                <div class="highlight">
+                    <h4>🎯 Objetivos del Particionamiento</h4>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Escalabilidad:</strong> Distribuir carga entre múltiples nodos</li>
+                        <li><strong>Performance:</strong> Paralelizar operaciones</li>
+                        <li><strong>Disponibilidad:</strong> Aislar fallos a particiones específicas</li>
+                        <li><strong>Gestión:</strong> Facilitar mantenimiento y backups</li>
+                    </ul>
+                </div>
+
+                <h3>Estrategias de Particionamiento</h3>
+
+                <div class="partition-strategies">
+                    <div class="strategy-card">
+                        <h5>🔢 Range Partitioning</h5>
+                        <p><strong>Método:</strong> Dividir por rangos de valores</p>
+                        <p><strong>Ejemplo:</strong> Usuarios A-H en Nodo 1, I-P en Nodo 2, Q-Z en Nodo 3</p>
+                        <p><strong>Ventaja:</strong> Consultas por rango eficientes</p>
+                        <p><strong>Desventaja:</strong> Distribución desigual (hotspots)</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>🎲 Hash Partitioning</h5>
+                        <p><strong>Método:</strong> Usar función hash para determinar partición</p>
+                        <p><strong>Ejemplo:</strong> hash(user_id) % 3 determina el nodo</p>
+                        <p><strong>Ventaja:</strong> Distribución uniforme</p>
+                        <p><strong>Desventaja:</strong> Consultas por rango ineficientes</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>📁 Directory Partitioning</h5>
+                        <p><strong>Método:</strong> Servicio de lookup mantiene mapeo</p>
+                        <p><strong>Ejemplo:</strong> Tabla de mapeo: user_123 → Nodo 2</p>
+                        <p><strong>Ventaja:</strong> Flexibilidad total</p>
+                        <p><strong>Desventaja:</strong> Punto único de falla en directorio</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>🔄 Consistent Hashing</h5>
+                        <p><strong>Método:</strong> Hash ring con nodos y datos</p>
+                        <p><strong>Ejemplo:</strong> Usado por Cassandra, DynamoDB</p>
+                        <p><strong>Ventaja:</strong> Rebalanceo mínimo al agregar nodos</p>
+                        <p><strong>Desventaja:</strong> Complejidad de implementación</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>🏢 Functional Partitioning</h5>
+                        <p><strong>Método:</strong> Dividir por funcionalidad/dominio</p>
+                        <p><strong>Ejemplo:</strong> Usuarios en DB1, Productos en DB2, Pedidos en DB3</p>
+                        <p><strong>Ventaja:</strong> Aislamiento de dominios</p>
+                        <p><strong>Desventaja:</strong> Consultas cross-domain complejas</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>🌍 Geographic Partitioning</h5>
+                        <p><strong>Método:</strong> Dividir por ubicación geográfica</p>
+                        <p><strong>Ejemplo:</strong> Usuarios de América en US, Europa en EU, Asia en AS</p>
+                        <p><strong>Ventaja:</strong> Latencia reducida, compliance legal</p>
+                        <p><strong>Desventaja:</strong> Distribución desigual por región</p>
+                    </div>
+                </div>
+
+                <h3>Ejemplo Detallado: E-commerce con Hash Partitioning</h3>
+                <div class="code-block">
+// Configuración: 3 nodos para tabla de usuarios
+// Función hash: MD5(user_id) % 3
+
+Ejemplos de distribución:
+user_12345 → MD5("12345") = "827ccb0eea8a706c4c34a16891f84e7b"
+          → Último dígito 'b' (11 en hex) % 3 = 2 → Nodo 2
+
+user_67890 → MD5("67890") = "03c7c0ace395d80182db07ae2c30f034" 
+          → Último dígito '4' % 3 = 1 → Nodo 1
+
+user_11111 → MD5("11111") = "b59c67bf196a4758191e42f76670ceba"
+          → Último dígito 'a' (10 en hex) % 3 = 1 → Nodo 1
+
+Consultas:
+- Buscar user_12345: Calcular hash → Ir directamente a Nodo 2
+- Buscar todos los usuarios: Consultar los 3 nodos y agregar resultados
+- Agregar nuevo nodo: Requiere re-sharding (problema del hash partitioning)
+
+Ventajas:
+✅ Distribución uniforme
+✅ Lookup O(1)
+✅ Sin hotspots
+
+Desventajas:
+❌ Re-sharding costoso
+❌ Consultas por rango ineficientes
+❌ Joins distribuidos complejos
+                </div>
+
+                <h3>Consistent Hashing: Solución al Re-sharding</h3>
+                <div class="code-block">
+Problema del Hash Partitioning tradicional:
+- Con 3 nodos: hash(key) % 3
+- Agregar 1 nodo: hash(key) % 4
+- Resultado: ~75% de los datos deben moverse
+
+Solución: Consistent Hashing
+1. Crear un "ring" de hash values (0 to 2^32-1)
+2. Colocar nodos en posiciones del ring
+3. Cada key va al próximo nodo en sentido horario
+4. Agregar nodo: solo afecta keys entre el nuevo nodo y el anterior
+
+Ejemplo:
+Ring positions: 0 -------- 2^32-1
+Nodos: A(100), B(200), C(300)
+
+key_x → hash = 150 → va a nodo B (próximo en sentido horario)
+key_y → hash = 250 → va a nodo C
+key_z → hash = 50  → va a nodo A
+
+Agregar nodo D(175):
+- Solo keys entre 100 y 175 se mueven de B a D
+- ~25% de movimiento vs ~75% en hash tradicional
+
+Tecnologías que lo usan:
+- Amazon DynamoDB
+- Apache Cassandra  
+- Redis Cluster
+- Riak
+                </div>
+
+                <h3>Problemas Comunes y Soluciones</h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Problema</th>
+                            <th>Descripción</th>
+                            <th>Soluciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Hotspots</strong></td>
+                            <td>Algunas particiones reciben más carga</td>
+                            <td>Hash partitioning, virtual nodes, re-sharding</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cross-shard Queries</strong></td>
+                            <td>Consultas que abarcan múltiples particiones</td>
+                            <td>Denormalización, índices globales, query routing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rebalancing</strong></td>
+                            <td>Redistribuir datos al agregar/quitar nodos</td>
+                            <td>Consistent hashing, virtual nodes, gradual migration</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transacciones</strong></td>
+                            <td>ACID a través de múltiples particiones</td>
+                            <td>2PC, Saga pattern, eventual consistency</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="parametros-nrw" class="section">
+                <h2><span class="icon">🔢</span>Parámetros N, R, W</h2>
+                
+                <h3>Introducción a los Parámetros</h3>
+                <p>Los parámetros N, R, W son fundamentales para configurar el comportamiento de consistencia y disponibilidad en sistemas distribuidos, especialmente en bases de datos NoSQL como Cassandra y DynamoDB.</p>
+
+                <div class="nrw-diagram">
+                    <h4>Definiciones</h4>
+                    <div class="nrw-formula">N = Número total de réplicas</div>
+                    <div class="nrw-formula">R = Número de réplicas que deben responder para una lectura</div>
+                    <div class="nrw-formula">W = Número de réplicas que deben confirmar una escritura</div>
+                    <br>
+                    <div class="nrw-formula">R + W > N = Strong Consistency</div>
+                    <div class="nrw-formula">R + W ≤ N = Eventual Consistency</div>
+                </div>
+
+                <h3>Análisis Detallado de cada Parámetro</h3>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🔢 N (Replication Factor)</h4>
+                        <p><strong>Definición:</strong> Número total de copias de cada dato en el cluster.</p>
+                        <div class="code-block">
+Ejemplos comunes:
+N = 1: Sin replicación (peligroso)
+N = 3: Configuración estándar (balance costo/disponibilidad)
+N = 5: Alta disponibilidad (más caro)
+
+Consideraciones:
+- Mayor N = Mayor disponibilidad + Mayor costo
+- N impar evita split-brain scenarios
+- N debe ser ≤ número de nodos disponibles
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4>📖 R (Read Consistency Level)</h4>
+                        <p><strong>Definición:</strong> Cuántas réplicas deben responder para considerar una lectura exitosa.</p>
+                        <div class="code-block">
+Opciones comunes:
+R = 1: Lectura rápida, posible inconsistencia
+R = 2: Balance entre velocidad y consistencia  
+R = N: Lectura más lenta, máxima consistencia
+
+Casos de uso:
+R = 1: Feeds de redes sociales, catálogos
+R = QUORUM: Datos importantes pero no críticos
+R = ALL: Datos financieros, inventarios críticos
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4>✍️ W (Write Consistency Level)</h4>
+                        <p><strong>Definición:</strong> Cuántas réplicas deben confirmar una escritura para considerarla exitosa.</p>
+                        <div class="code-block">
+Opciones comunes:
+W = 1: Escritura rápida, riesgo de pérdida
+W = 2: Balance entre velocidad y durabilidad
+W = N: Escritura lenta, máxima durabilidad
+
+Casos de uso:
+W = 1: Logs, métricas, datos no críticos
+W = QUORUM: Datos de aplicación estándar
+W = ALL: Transacciones financieras críticas
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Configuraciones Comunes y sus Trade-offs</h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Configuración</th>
+                            <th>N, R, W</th>
+                            <th>Consistencia</th>
+                            <th>Disponibilidad</th>
+                            <th>Performance</th>
+                            <th>Caso de Uso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Fast Writes</strong></td>
+                            <td>N=3, R=2, W=1</td>
+                            <td>Eventual</td>
+                            <td>Alta</td>
+                            <td>Escrituras rápidas</td>
+                            <td>Logs, métricas, eventos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fast Reads</strong></td>
+                            <td>N=3, R=1, W=2</td>
+                            <td>Eventual</td>
+                            <td>Alta</td>
+                            <td>Lecturas rápidas</td>
+                            <td>Catálogos, feeds, cache</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Balanced</strong></td>
+                            <td>N=3, R=2, W=2</td>
+                            <td>Strong</td>
+                            <td>Media</td>
+                            <td>Balanceada</td>
+                            <td>Aplicaciones generales</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Strong Consistency</strong></td>
+                            <td>N=3, R=3, W=3</td>
+                            <td>Strong</td>
+                            <td>Baja</td>
+                            <td>Lenta</td>
+                            <td>Datos financieros críticos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>High Availability</strong></td>
+                            <td>N=5, R=1, W=1</td>
+                            <td>Eventual</td>
+                            <td>Muy Alta</td>
+                            <td>Muy rápida</td>
+                            <td>Sistemas 24/7 críticos</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Ejemplo Práctico: Sistema de E-commerce</h3>
+                <div class="code-block">
+Configuración del cluster:
+- 5 nodos distribuidos geográficamente
+- N = 3 (cada dato replicado 3 veces)
+
+Diferentes configuraciones por tipo de dato:
+
+1. CATÁLOGO DE PRODUCTOS (lectura intensiva)
+   Configuración: N=3, R=1, W=2
+   Justificación:
+   - Lecturas muy rápidas (solo 1 nodo responde)
+   - Escrituras durables (2 nodos confirman)
+   - Consistencia eventual aceptable para catálogo
+   
+   Comportamiento:
+   - Usuario ve productos inmediatamente
+   - Actualización de precio puede tardar segundos en propagarse
+   - Disponible incluso si 2 nodos fallan
+
+2. INVENTARIO (balance crítico)
+   Configuración: N=3, R=2, W=2  
+   Justificación:
+   - Strong consistency (R+W > N)
+   - Balance entre performance y consistencia
+   - Evita overselling
+   
+   Comportamiento:
+   - Lecturas ven escrituras recientes
+   - Escrituras esperan confirmación de mayoría
+   - Disponible si máximo 1 nodo falla
+
+3. TRANSACCIONES DE PAGO (crítico)
+   Configuración: N=3, R=3, W=3
+   Justificación:
+   - Máxima consistencia y durabilidad
+   - Cero tolerancia a pérdida de datos
+   - Performance secundaria a integridad
+   
+   Comportamiento:
+   - Todas las réplicas deben confirmar
+   - Latencia mayor pero datos seguros
+   - No disponible si cualquier nodo falla
+
+Monitoreo y alertas:
+- Latencia P99 por tipo de operación
+- Tasa de éxito por consistency level
+- Alertas si availability < SLA
+                </div>
+
+                <h3>Tuning Dinámico</h3>
+                <p>Los parámetros N, R, W pueden ajustarse dinámicamente según las condiciones del sistema:</p>
+
+                <div class="code-block">
+// Ejemplo en Cassandra
+// Configuración base
+CREATE KEYSPACE ecommerce 
+WITH replication = {
+  'class': 'NetworkTopologyStrategy',
+  'datacenter1': 3,
+  'datacenter2': 2
+};
+
+// Ajuste dinámico por consulta
+-- Lectura crítica (balance de cuenta)
+SELECT balance FROM accounts WHERE user_id = ? 
+USING CONSISTENCY QUORUM;
+
+-- Lectura no crítica (feed de productos)  
+SELECT * FROM product_feed WHERE category = ?
+USING CONSISTENCY ONE;
+
+-- Escritura crítica (transacción)
+INSERT INTO transactions (id, amount, from_account, to_account)
+VALUES (?, ?, ?, ?)
+USING CONSISTENCY ALL;
+
+-- Escritura no crítica (log de actividad)
+INSERT INTO activity_log (user_id, action, timestamp)
+VALUES (?, ?, ?)
+USING CONSISTENCY ONE;
+
+// Monitoreo automático
+if (latency_p99 > SLA_THRESHOLD) {
+    // Reducir consistency level temporalmente
+    consistency_level = ONE;
+    alert("Degraded consistency due to high latency");
+}
+
+if (node_failures > 1) {
+    // Aumentar replication factor
+    replication_factor = 5;
+    alert("Increased replication due to node failures");
+}
+                </div>
+            </section>
+
+            <section id="escalamiento" class="section">
+                <h2><span class="icon">📈</span>Estrategias de Escalamiento</h2>
+                
+                <h3>Escalamiento Vertical vs Horizontal</h3>
+                <p>El escalamiento es fundamental para manejar el crecimiento de datos y usuarios. Existen dos enfoques principales, cada uno con sus ventajas y limitaciones:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>⬆️ Escalamiento Vertical (Scale Up)</h4>
+                        <p><strong>Definición:</strong> Aumentar la capacidad de un servidor individual (más CPU, RAM, almacenamiento).</p>
+                        <div class="code-block">
+Ejemplo de progresión:
+Servidor inicial: 4 CPU, 16GB RAM, 1TB SSD
+Escalamiento 1:   8 CPU, 32GB RAM, 2TB SSD  
+Escalamiento 2:  16 CPU, 64GB RAM, 4TB SSD
+Escalamiento 3:  32 CPU, 128GB RAM, 8TB SSD
+
+Límites físicos:
+- CPU: ~128 cores en servidores high-end
+- RAM: ~4TB en configuraciones extremas  
+- Storage: ~100TB en arrays SSD
+- Costo: Exponencial ($10K → $100K → $1M+)
+                        </div>
+                        <p><strong>Ventajas:</strong> Simplicidad, no cambios en aplicación, ACID completo</p>
+                        <p><strong>Desventajas:</strong> Límites físicos, costo exponencial, punto único de falla</p>
+                    </div>
+                    <div class="card">
+                        <h4>➡️ Escalamiento Horizontal (Scale Out)</h4>
+                        <p><strong>Definición:</strong> Agregar más servidores al sistema para distribuir la carga.</p>
+                        <div class="code-block">
+Ejemplo de progresión:
+Configuración inicial: 1 servidor
+Escalamiento 1:        3 servidores (cluster)
+Escalamiento 2:        10 servidores  
+Escalamiento 3:        100 servidores
+Escalamiento 4:        1000+ servidores (Google, Facebook)
+
+Beneficios lineales:
+- Capacidad: N servidores = N × capacidad individual
+- Costo: Lineal con hardware commodity
+- Disponibilidad: Fault tolerance aumenta
+- Flexibilidad: Agregar/quitar nodos dinámicamente
+                        </div>
+                        <p><strong>Ventajas:</strong> Escalabilidad ilimitada, costo lineal, alta disponibilidad</p>
+                        <p><strong>Desventajas:</strong> Complejidad, consistencia eventual, cambios en aplicación</p>
+                    </div>
+                </div>
+
+                <h3>Patrones de Escalamiento Horizontal</h3>
+
+                <div class="partition-strategies">
+                    <div class="strategy-card">
+                        <h5>🔄 Master-Slave Replication</h5>
+                        <p><strong>Patrón:</strong> Un nodo maestro para escrituras, múltiples esclavos para lecturas</p>
+                        <p><strong>Escalabilidad:</strong> Solo lecturas (write bottleneck en master)</p>
+                        <p><strong>Ejemplo:</strong> MySQL con read replicas</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>🌐 Master-Master Replication</h5>
+                        <p><strong>Patrón:</strong> Múltiples nodos pueden recibir escrituras</p>
+                        <p><strong>Escalabilidad:</strong> Lecturas y escrituras</p>
+                        <p><strong>Problema:</strong> Conflictos de escritura, split-brain</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>📊 Sharding/Partitioning</h5>
+                        <p><strong>Patrón:</strong> Dividir datos entre múltiples nodos</p>
+                        <p><strong>Escalabilidad:</strong> Lecturas y escrituras lineales</p>
+                        <p><strong>Complejidad:</strong> Query routing, rebalancing</p>
+                    </div>
+                    <div class="strategy-card">
+                        <h5>🏗️ Microservices Architecture</h5>
+                        <p><strong>Patrón:</strong> Dividir aplicación por dominios funcionales</p>
+                        <p><strong>Escalabilidad:</strong> Independiente por servicio</p>
+                        <p><strong>Beneficio:</strong> Tecnologías específicas por dominio</p>
+                    </div>
+                </div>
+
+                <h3>Ejemplo: Evolución de Escalamiento en Startup</h3>
+                <div class="code-block">
+FASE 1: MVP (0-1K usuarios)
+Arquitectura: Monolito + PostgreSQL en 1 servidor
+Costo: $100/mes
+Limitaciones: ~1K usuarios concurrentes
+Bottleneck: CPU del servidor único
+
+FASE 2: Crecimiento (1K-10K usuarios)  
+Arquitectura: App server + DB server separados
+Escalamiento: Vertical (más CPU/RAM)
+Costo: $500/mes
+Limitaciones: ~10K usuarios concurrentes
+Bottleneck: Base de datos (escrituras)
+
+FASE 3: Escalamiento inicial (10K-100K usuarios)
+Arquitectura: Load balancer + múltiples app servers + DB master-slave
+Escalamiento: Horizontal para app, vertical para DB
+Costo: $2K/mes
+Limitaciones: ~100K usuarios concurrentes
+Bottleneck: DB master (escrituras)
+
+FASE 4: Distribución (100K-1M usuarios)
+Arquitectura: Microservicios + sharded databases + cache layer
+Escalamiento: Horizontal completo
+Costo: $20K/mes
+Limitaciones: ~1M usuarios concurrentes
+Bottleneck: Complejidad operacional
+
+FASE 5: Hiperescala (1M+ usuarios)
+Arquitectura: Multi-región + CDN + NoSQL + event streaming
+Escalamiento: Global distribution
+Costo: $200K+/mes
+Limitaciones: Principalmente organizacionales
+Bottleneck: Coordinación entre equipos
+                </div>
+
+                <h3>Métricas y Monitoreo de Escalabilidad</h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Métrica</th>
+                            <th>Descripción</th>
+                            <th>Objetivo Típico</th>
+                            <th>Herramientas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Throughput</strong></td>
+                            <td>Operaciones por segundo (QPS, TPS)</td>
+                            <td>Crecimiento lineal con nodos</td>
+                            <td>Grafana, DataDog, New Relic</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Latencia</strong></td>
+                            <td>Tiempo de respuesta (P50, P95, P99)</td>
+                            <td>Constante o crecimiento logarítmico</td>
+                            <td>APM tools, custom metrics</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Utilización</strong></td>
+                            <td>CPU, memoria, disco, red por nodo</td>
+                            <td>60-80% (headroom para picos)</td>
+                            <td>Prometheus, CloudWatch</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Disponibilidad</strong></td>
+                            <td>Uptime del sistema (%)</td>
+                            <td>99.9% - 99.99% según SLA</td>
+                            <td>Pingdom, StatusPage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Costo por Usuario</strong></td>
+                            <td>Infraestructura / usuarios activos</td>
+                            <td>Decreciente con escala</td>
+                            <td>Cost management tools</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="tpo" class="section">
+                <h2><span class="icon">🎯</span>Hito 3 — Arquitectura Distribuida del Fixture 2030</h2>
+                
+                <div class="highlight">
+                    <h4>Entregable: Documento de arquitectura distribuida</h4>
+                    <p>Sobre la matriz de decisión elaborada en el Hito 2, cada grupo deberá diseñar la arquitectura distribuida de la plataforma del Fixture 2030. El análisis deberá aplicar CAP, modelos de consistencia, replicación, particionamiento y escalabilidad para responder a los requisitos de disponibilidad, concurrencia y distribución geográfica del escenario.</p>
+                </div>
+
+                <h3>Componentes de la entrega</h3>
+                <div class="code-block">
+1. ANÁLISIS CAP DEL FIXTURE 2030
+   ├── Necesidades de consistencia, disponibilidad y tolerancia a particiones
+   ├── Prioridad de propiedades por subsistema
+   ├── Decisiones justificadas y trade-offs aceptados
+   └── Relación con la matriz de decisión del Hito 2
+
+2. MODELOS DE CONSISTENCIA
+   ├── Garantías necesarias según tipo de información
+   ├── Tolerancia a información temporalmente desactualizada
+   ├── Riesgos de inconsistencias y su impacto funcional
+   └── Criterios para resolver conflictos
+
+3. ESTRATEGIA DE DISTRIBUCIÓN
+   ├── Patrones de acceso relevantes
+   ├── Propuesta de particionamiento por necesidad de datos
+   ├── Parámetros de réplica y quórum cuando correspondan
+   └── Riesgos de hotspots, reequilibrio y consultas distribuidas
+
+4. PLAN DE ESCALABILIDAD
+   ├── Escenarios de carga y crecimiento
+   ├── Decisión entre escalamiento vertical y horizontal
+   ├── Cuellos de botella previsibles
+   └── Métricas para evaluar capacidad, latencia y disponibilidad
+
+5. TOPOLOGÍA Y RESILIENCIA
+   ├── Organización preliminar de nodos y regiones
+   ├── Estrategia de replicación y failover
+   ├── Recuperación ante fallos
+   └── Decisiones que deberán validarse en los próximos hitos
+                </div>
+
+                <h3>Criterios de Evaluación</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🧠 Aplicación de conceptos distribuidos (35%)</h4>
+                        <ul>
+                            <li>Análisis correcto del Teorema CAP</li>
+                            <li>Justificación de los modelos de consistencia</li>
+                            <li>Reconocimiento explícito de trade-offs</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>🏗️ Diseño de arquitectura (35%)</h4>
+                        <ul>
+                            <li>Coherencia con el Fixture 2030 y el Hito 2</li>
+                            <li>Estrategias fundamentadas de distribución y réplica</li>
+                            <li>Consideración de fallos y recuperación</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>📊 Escalabilidad y viabilidad (20%)</h4>
+                        <ul>
+                            <li>Escenarios de carga realistas</li>
+                            <li>Identificación de límites y cuellos de botella</li>
+                            <li>Métricas propuestas para verificar la arquitectura</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>📝 Calidad documental (10%)</h4>
+                        <ul>
+                            <li>Documento claro, ordenado y verificable</li>
+                            <li>Diagramas y tablas legibles</li>
+                            <li>Uso preciso de terminología técnica</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Herramientas Recomendadas</h3>
+                <ul style="margin-left: 20px;">
+                    <li><strong>Diagramas:</strong> Draw.io, Lucidchart, Miro o Excalidraw</li>
+                    <li><strong>Cálculos:</strong> Excel, Google Sheets o LibreOffice Calc para la estimación de capacidad</li>
+                    <li><strong>Documentación:</strong> Documentación oficial y fuentes técnicas confiables</li>
+                    <li><strong>Validación conceptual:</strong> Simuladores y materiales de estudio sobre sistemas distribuidos</li>
+                </ul>
+
+            </section>
+
+            <section id="proxima" class="section">
+                <h2><span class="icon">➡️</span>Próxima Clase</h2>
+                
+                <div class="highlight">
+                    <h4>Próxima etapa del proyecto</h4>
+                    <p>La continuidad del TPO se organizará de acuerdo con el cronograma actualizado. El próximo hito deberá retomar las decisiones de arquitectura distribuida y llevarlas al nivel de implementación que corresponda.</p>
+                </div>
+
+                <h3>Preparación Requerida</h3>
+                <ul style="margin-left: 20px;">
+                        <li><strong>Completar el documento de arquitectura distribuida</strong> y dejarlo disponible para revisión</li>
+                        <li>Revisar las decisiones del Hito 2 que condicionan la arquitectura</li>
+                        <li>Registrar dudas o supuestos que requieran validación durante los próximos hitos</li>
+                </ul>
+
+                <h3>Recursos para Estudio</h3>
+                <ul style="margin-left: 20px;">
+                    <li><a href="https://en.wikipedia.org/wiki/CAP_theorem" target="_blank">CAP Theorem - Wikipedia</a></li>
+                    <li><a href="https://martin.kleppmann.com/2015/05/11/please-stop-calling-databases-cp-or-ap.html" target="_blank">Please stop calling databases CP or AP - Martin Kleppmann</a></li>
+                    <li><a href="https://aws.amazon.com/builders-library/challenges-with-distributed-systems/" target="_blank">Challenges with distributed systems - AWS</a></li>
+                    <li><a href="https://www.allthingsdistributed.com/2008/12/eventually_consistent.html" target="_blank">Eventually Consistent - Werner Vogels</a></li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const isVisible = sidebar.style.transform === 'translateX(0px)' || sidebar.style.transform === '';
+            sidebar.style.transform = isVisible ? 'translateX(-100%)' : 'translateX(0px)';
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.sidebar a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight current section in navigation
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.sidebar a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.background = '';
+                link.style.color = '#ecf0f1';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.background = '#34495e';
+                    link.style.color = '#3498db';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

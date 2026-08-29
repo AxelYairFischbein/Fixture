@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 4: MongoDB - Bases Documentales - Ingeniería de Datos II</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-image: url('assets/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background: #34495e;
+            color: #3498db;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            flex: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #27ae60;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #34495e;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: #27ae60;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: #e8f5e8;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block::before {
+            content: "Código";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #27ae60;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #d5f4e6 0%, #ffeaa7 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #27ae60;
+        }
+
+        .highlight h4 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #27ae60;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            width: 26.67%; /* 4/15 classes */
+            transition: width 0.3s ease;
+        }
+
+        .docker-command {
+            background: #34495e;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #27ae60;
+            position: relative;
+            white-space: pre-wrap;
+            word-wrap: break-word;            
+        }
+
+        .docker-command::before {
+            content: "Docker";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #27ae60;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .schema-example {
+            background: #f8f9fa;
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .schema-example h5 {
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .crud-operations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .crud-card {
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .create-card { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .read-card { background: linear-gradient(135deg, #3498db, #5dade2); }
+        .update-card { background: linear-gradient(135deg, #f39c12, #f7dc6f); }
+        .delete-card { background: linear-gradient(135deg, #e74c3c, #ec7063); }
+
+        .mongodb-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #27ae60;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h5 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .crud-operations {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <h2>📚 Navegación</h2>
+            <ul>
+                <li><a href="#objetivos">🎯 Objetivos</a></li>
+                <li><a href="#introduccion">📄 Introducción a MongoDB</a></li>
+                <li><a href="#preparacion">💻 Preparación del entorno</a></li>
+                <li><a href="#instalacion">🐳 Instalación con Docker</a></li>
+                <li><a href="#arquitectura">🏗️ Arquitectura y Conceptos</a></li>
+                <li><a href="#esquemas">📋 Diseño de Esquemas</a></li>
+                <li><a href="#crud">🔧 Operaciones CRUD</a></li>
+                <li><a href="#practica-guiada">✍️ Práctica guiada</a></li>
+                <li><a href="#indexacion">⚡ Indexación y Performance</a></li>
+                <li><a href="#agregacion">📊 Pipeline de Agregación</a></li>
+                <li><a href="#replicacion">🔄 Replicación y Sharding</a></li>
+                <li><a href="#tpo">🎯 Hito 4 — Fixture 2030</a></li>
+                <li><a href="#proxima">➡️ Próxima Clase</a></li>
+            </ul>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 28.57%;"></div>
+            </div>
+            <p style="font-size: 0.9em; margin-top: 10px;">Clase 4 de 14</p>
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <h1>MongoDB - Bases Documentales</h1>
+                <p>Ingeniería de Datos II - Clase 4</p>
+                <p>Características, carga, recuperación, escalabilidad y ejercitación</p>
+            </header>
+
+            <section id="objetivos" class="section">
+                <h2><span class="icon">🎯</span>Objetivos de la Clase</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>Configurar MongoDB con Docker</h4>
+                        <p>Instalar y configurar MongoDB usando Docker Compose, incluyendo persistencia de datos y configuración de red.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Dominar el diseño de esquemas</h4>
+                        <p>Aprender patrones de diseño de documentos, embedding vs referencing, y optimización para casos de uso específicos.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Implementar operaciones CRUD</h4>
+                        <p>Desarrollar operaciones completas de Create, Read, Update y Delete sobre los datos de equipos y jugadores del Fixture 2030.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Construir el módulo documental del Fixture</h4>
+                        <p>Implementar las colecciones de equipos y jugadores de la plataforma, recuperando las decisiones tomadas en los hitos anteriores.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="introduccion" class="section">
+                <h2><span class="icon">📄</span>Introducción a MongoDB</h2>
+                
+                <h3>¿Qué es MongoDB?</h3>
+                <p>MongoDB es una base de datos NoSQL orientada a documentos que almacena datos en formato BSON (Binary JSON). Es una de las bases de datos NoSQL más populares del mundo, utilizada por empresas como Facebook, Google, Adobe, y Uber.</p>
+
+                <div class="mongodb-features">
+                    <div class="feature-card">
+                        <h5>🔄 Esquema Flexible</h5>
+                        <p>Los documentos en una colección pueden tener estructuras diferentes. Ideal para datos semi-estructurados y evolución de esquemas.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📈 Escalabilidad Horizontal</h5>
+                        <p>Sharding nativo para distribuir datos entre múltiples servidores. Escalamiento automático y transparente.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🔍 Consultas Ricas</h5>
+                        <p>Soporte para consultas complejas, índices secundarios, búsquedas de texto completo y geoespaciales.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>⚡ Alto Rendimiento</h5>
+                        <p>Optimizado para lecturas y escrituras rápidas. Soporte para índices compuestos y pipeline de agregación.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🛡️ Alta Disponibilidad</h5>
+                        <p>Replica sets con failover automático. Garantiza disponibilidad incluso con fallos de nodos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🔧 Facilidad de Desarrollo</h5>
+                        <p>Mapeo natural con objetos de programación. Drivers oficiales para todos los lenguajes principales.</p>
+                    </div>
+                </div>
+
+                <h3>Casos de Uso Ideales</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>📱 Aplicaciones Web y Móviles</h4>
+                        <p>Perfiles de usuario, configuraciones, contenido dinámico. La flexibilidad del esquema permite evolución rápida.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📊 Gestión de Contenido</h4>
+                        <p>CMS, blogs, catálogos de productos. Documentos complejos con estructuras anidadas.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🌐 APIs y Microservicios</h4>
+                        <p>Almacenamiento de datos JSON nativos. Integración directa con aplicaciones REST.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📈 Analytics en Tiempo Real</h4>
+                        <p>Eventos, logs, métricas. Pipeline de agregación para análisis complejos.</p>
+                    </div>
+                </div>
+
+                <h3>Cuándo NO usar MongoDB</h3>
+                <div class="highlight">
+                    <h4>⚠️ Limitaciones Importantes</h4>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Transacciones ACID complejas:</strong> Aunque MongoDB 4.0+ soporta transacciones multi-documento, no es tan robusto como bases relacionales</li>
+                        <li><strong>Consultas relacionales complejas:</strong> JOINs son limitados, mejor usar $lookup con cuidado</li>
+                        <li><strong>Datos altamente normalizados:</strong> Si tu modelo es muy relacional, SQL puede ser mejor opción</li>
+                        <li><strong>Reportes complejos:</strong> Para BI y reportes complejos, considera data warehouses especializados</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="preparacion" class="section">
+                <h2><span class="icon">💻</span>Preparación del Entorno Local</h2>
+
+                <div class="highlight">
+                    <h4>Objetivo de esta sección</h4>
+                    <p>Al finalizar esta preparación, cada estudiante deberá contar con Docker Desktop en ejecución y podrá conectarse a una instancia local de MongoDB mediante la terminal o una interfaz gráfica. En el aula se trabajará sobre la notebook de cada grupo y se utilizará el mismo ambiente para el módulo documental del Fixture 2030.</p>
+                </div>
+
+                <h3>1. Verificar los requisitos previos</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Componente</th>
+                            <th>Requisito</th>
+                            <th>Cómo comprobarlo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Notebook</td>
+                            <td>Al menos 8 GB de RAM recomendados y espacio libre para imágenes y volúmenes.</td>
+                            <td>Revisar información del sistema antes de instalar.</td>
+                        </tr>
+                        <tr>
+                            <td>macOS</td>
+                            <td>Mac con procesador Apple Silicon o Intel y una versión de macOS compatible.</td>
+                            <td>Menú Apple → Acerca de esta Mac.</td>
+                        </tr>
+                        <tr>
+                            <td>Docker Desktop</td>
+                            <td>Aplicación iniciada; el motor Docker debe estar disponible antes de ejecutar comandos.</td>
+                            <td><code>docker version</code> y <code>docker compose version</code>.</td>
+                        </tr>
+                        <tr>
+                            <td>Acceso de red</td>
+                            <td>Conexión a Internet para descargar imágenes y herramientas la primera vez.</td>
+                            <td>Abrir los enlaces oficiales desde la notebook.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>2. Instalar Docker Desktop en macOS</h3>
+                <p>Docker Desktop provee el motor Docker y Docker Compose que usarán para ejecutar MongoDB de forma aislada. Antes de descargarlo, deben identificar si la notebook utiliza <strong>Apple Silicon</strong> (M1, M2, M3, M4 o posteriores) o un procesador <strong>Intel</strong>.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🍎 Mac con Apple Silicon</h4>
+                        <p>Descargar la edición para Apple Silicon desde la documentación oficial de Docker.</p>
+                        <p style="margin-top: 10px;"><a href="https://docs.docker.com/desktop/setup/install/mac-install/" target="_blank">Abrir instalación oficial de Docker Desktop para Mac</a></p>
+                    </div>
+                    <div class="card">
+                        <h4>💻 Mac con Intel</h4>
+                        <p>Descargar la edición para Intel desde la misma página oficial, seleccionando la arquitectura correspondiente.</p>
+                        <p style="margin-top: 10px;"><a href="https://docs.docker.com/desktop/setup/install/mac-install/" target="_blank">Abrir instalación oficial de Docker Desktop para Mac</a></p>
+                    </div>
+                </div>
+
+                <div class="docker-command">
+# Pasos de instalación en macOS
+1. Descargar Docker Desktop para la arquitectura correcta.
+2. Abrir el archivo Docker.dmg descargado.
+3. Arrastrar Docker.app a la carpeta Applications.
+4. Abrir Docker Desktop desde Applications.
+5. Aceptar los términos y seleccionar la configuración recomendada.
+6. Esperar hasta que Docker Desktop indique que el motor está en ejecución.
+                </div>
+
+                <p>Luego, abrir una terminal y validar la instalación. Si alguno de estos comandos informa que Docker no está disponible, abrir Docker Desktop y esperar a que termine de iniciar antes de continuar.</p>
+
+                <div class="docker-command">
+# Verificar Docker y Docker Compose
+docker version
+docker compose version
+
+# Prueba rápida: descarga y ejecuta un contenedor de prueba
+docker run --rm hello-world
+                </div>
+
+                <div class="highlight">
+                    <h4>Nota para macOS</h4>
+                    <p>El ambiente de esta materia utiliza un <strong>volumen nombrado de Docker</strong> para los datos de MongoDB. Esta opción evita los problemas de compatibilidad que pueden aparecer al montar directamente el directorio de datos de MongoDB desde macOS.</p>
+                </div>
+
+                <h3>3. Instalar MongoDB Compass en macOS</h3>
+                <p><strong>MongoDB Compass</strong> es la interfaz gráfica oficial para explorar bases, colecciones, documentos e índices. Es útil para inspeccionar visualmente el resultado de las sentencias que se ejecuten durante la clase.</p>
+
+                <div class="code-block">
+Pasos:
+1. Abrir el centro de descargas oficial de MongoDB Compass.
+2. Seleccionar macOS Apple Silicon o macOS x64 según el procesador.
+3. Descargar el archivo .dmg y abrirlo.
+4. Arrastrar MongoDB Compass a Applications.
+5. Abrir Compass y confirmar los permisos de macOS si fueran solicitados.
+
+Descarga oficial:
+https://www.mongodb.com/try/download/compass
+                </div>
+
+                <p>Cuando MongoDB esté iniciado con el archivo Compose de la próxima sección, utilizar esta cadena de conexión en Compass:</p>
+                <div class="code-block">
+mongodb://admin:password123@localhost:27017/?authSource=admin
+                </div>
+
+                <h3>4. Instalar MongoDB Shell (mongosh) en macOS</h3>
+                <p>El cliente de línea de comandos actual de MongoDB se denomina <strong>mongosh</strong>. No debe confundirse con el servidor MongoDB ni con el cliente histórico <code>mongo</code>. En macOS, la alternativa más simple es instalarlo mediante Homebrew.</p>
+
+                <div class="docker-command">
+# Verificar que Homebrew esté disponible
+brew --version
+
+# Instalar MongoDB Shell
+brew install mongosh
+
+# Confirmar la instalación
+mongosh --version
+                </div>
+
+                <p>Si la notebook no tiene Homebrew, se puede descargar el instalador o archivo comprimido adecuado para macOS desde el <a href="https://www.mongodb.com/try/download/shell" target="_blank">Centro de descargas de MongoDB Shell</a>. Deben elegir la arquitectura correcta: <strong>arm64</strong> para Apple Silicon o <strong>x64</strong> para Intel. La guía oficial de instalación también explica cómo agregar el ejecutable al PATH.</p>
+
+                <h3>5. Tres formas de conectarse al MongoDB del proyecto</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Alternativa</th>
+                            <th>Cuándo usarla</th>
+                            <th>Acción inicial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>mongosh dentro del contenedor</td>
+                            <td>Si no se instaló mongosh en la notebook.</td>
+                            <td><code>docker exec -it fixture2030-mongodb mongosh</code></td>
+                        </tr>
+                        <tr>
+                            <td>mongosh en la notebook</td>
+                            <td>Para trabajar desde la terminal local.</td>
+                            <td><code>mongosh &quot;mongodb://admin:password123@localhost:27017/?authSource=admin&quot;</code></td>
+                        </tr>
+                        <tr>
+                            <td>MongoDB Compass</td>
+                            <td>Para explorar documentos y ejecutar consultas visualmente.</td>
+                            <td>Crear una conexión nueva con la misma URI.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>6. Diagnóstico rápido de problemas frecuentes</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Situación</th>
+                            <th>Comprobación</th>
+                            <th>Acción inicial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Docker no responde</td>
+                            <td><code>docker version</code> devuelve un error.</td>
+                            <td>Abrir Docker Desktop y esperar que el motor finalice su inicio.</td>
+                        </tr>
+                        <tr>
+                            <td>El puerto está ocupado</td>
+                            <td><code>docker compose up -d</code> informa un conflicto en el puerto 27017 u 8081.</td>
+                            <td>Detener la aplicación que usa el puerto o acordar un puerto alternativo y documentarlo.</td>
+                        </tr>
+                        <tr>
+                            <td>Compass no conecta</td>
+                            <td>El contenedor no aparece como activo en <code>docker compose ps</code>.</td>
+                            <td>Revisar <code>docker compose logs mongodb</code>, luego verificar la URI y la autenticación.</td>
+                        </tr>
+                        <tr>
+                            <td>Las credenciales no cambian</td>
+                            <td>Se modificaron variables de entorno con un volumen ya inicializado.</td>
+                            <td>Recordar que las variables de inicialización actúan sobre una base vacía; no eliminar volúmenes salvo que sea intencional.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="instalacion" class="section">
+                <h2><span class="icon">🐳</span>Instalación con Docker</h2>
+                
+                <h3>Configuración Básica</h3>
+                <p>Vamos a configurar MongoDB usando Docker Compose para facilitar la gestión y persistencia de datos.</p>
+
+                <div class="docker-command">
+# Crear directorio del proyecto
+mkdir fixture2030-mongodb
+cd fixture2030-mongodb
+
+# Crear archivo docker-compose.yml
+touch docker-compose.yml
+                </div>
+
+                <h3>Docker Compose Configuration</h3>
+                <div class="code-block">
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: fixture2030-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: fixture2030
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - mongodb-network
+
+  mongo-express:
+    image: mongo-express:1.0.0
+    container_name: fixture2030-mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password123
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password123@mongodb:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongodb
+    networks:
+      - mongodb-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  mongodb-network:
+    driver: bridge
+                </div>
+
+                <h3>Comandos de Gestión</h3>
+                <div class="docker-command">
+# Iniciar los servicios
+docker compose up -d
+
+# Verificar que están corriendo
+docker compose ps
+
+# Ver logs
+docker compose logs mongodb
+
+# Conectar al shell de MongoDB
+docker exec -it fixture2030-mongodb mongosh
+
+# Parar los servicios
+docker compose down
+
+# Parar y eliminar volúmenes (¡CUIDADO!)
+docker compose down -v
+                </div>
+
+                <h3>Verificación de la Instalación</h3>
+                <div class="code-block">
+// Conectar a MongoDB shell
+mongosh "mongodb://admin:password123@localhost:27017/fixture2030"
+
+// Verificar conexión
+db.runCommand({ hello: 1 })
+
+// Crear una colección de prueba
+db.test.insertOne({ mensaje: "MongoDB funcionando correctamente", fecha: new Date() })
+
+// Verificar la inserción
+db.test.find()
+
+// Acceder a Mongo Express
+// Abrir navegador en: http://localhost:8081
+                </div>
+
+                <div class="highlight">
+                    <h4>🔧 Configuración para Producción</h4>
+                    <p>Para entornos de producción, considera:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Autenticación robusta:</strong> Usuarios específicos por aplicación</li>
+                        <li><strong>SSL/TLS:</strong> Encriptación en tránsito</li>
+                        <li><strong>Backup automático:</strong> Scripts de respaldo regulares</li>
+                        <li><strong>Monitoreo:</strong> Métricas de performance y alertas</li>
+                        <li><strong>Replica Sets:</strong> Alta disponibilidad con múltiples nodos</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="arquitectura" class="section">
+                <h2><span class="icon">🏗️</span>Arquitectura y Conceptos Clave</h2>
+                
+                <h3>Jerarquía de Datos</h3>
+                <div class="code-block">
+MongoDB Server
+├── Database (Base de Datos)
+│   ├── Collection (Colección) ≈ Tabla en SQL
+│   │   ├── Document (Documento) ≈ Fila en SQL
+│   │   │   ├── Field (Campo) ≈ Columna en SQL
+│   │   │   └── Value (Valor)
+│   │   └── Document
+│   └── Collection
+└── Database
+                </div>
+
+                <h3>Comparación con Bases Relacionales</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto SQL</th>
+                            <th>Concepto MongoDB</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td><strong>Database</strong></td>
+                            <td>Contenedor de alto nivel para datos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Table</strong></td>
+                            <td><strong>Collection</strong></td>
+                            <td>Grupo de registros relacionados</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Row</strong></td>
+                            <td><strong>Document</strong></td>
+                            <td>Registro individual de datos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Column</strong></td>
+                            <td><strong>Field</strong></td>
+                            <td>Atributo específico del registro</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Primary Key</strong></td>
+                            <td><strong>_id</strong></td>
+                            <td>Identificador único (ObjectId)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>JOIN</strong></td>
+                            <td><strong>$lookup / Embedding</strong></td>
+                            <td>Relacionar datos entre colecciones</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Tipos de Datos BSON</h3>
+                <div class="mongodb-features">
+                    <div class="feature-card">
+                        <h5>📝 String</h5>
+                        <p>Texto UTF-8. Más eficiente que JSON para strings largos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🔢 Number</h5>
+                        <p>Int32, Int64, Double, Decimal128 para precisión financiera.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📅 Date</h5>
+                        <p>Timestamps con precisión de milisegundos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🆔 ObjectId</h5>
+                        <p>Identificador único de 12 bytes con timestamp embebido.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📋 Array</h5>
+                        <p>Listas ordenadas de valores de cualquier tipo.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📦 Object</h5>
+                        <p>Documentos anidados (subdocumentos).</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>✅ Boolean</h5>
+                        <p>Valores true/false.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🗂️ Binary</h5>
+                        <p>Datos binarios como imágenes o archivos.</p>
+                    </div>
+                </div>
+
+                <h3>Ejemplo de Documento</h3>
+                <div class="code-block">
+{
+  "_id": ObjectId("507f1f77bcf86cd799439011"),
+  "nombre": "Juan Pérez",
+  "email": "juan.perez@email.com",
+  "edad": 28,
+  "activo": true,
+  "fechaRegistro": ISODate("2024-01-15T10:30:00Z"),
+  "direccion": {
+    "calle": "Av. Corrientes 1234",
+    "ciudad": "Buenos Aires",
+    "codigoPostal": "C1043AAZ",
+    "pais": "Argentina"
+  },
+  "intereses": ["tecnología", "deportes", "música"],
+  "configuracion": {
+    "notificaciones": true,
+    "tema": "oscuro",
+    "idioma": "es"
+  },
+  "ultimaActividad": ISODate("2024-01-20T15:45:30Z")
+}
+                </div>
+            </section>
+
+            <section id="esquemas" class="section">
+                <h2><span class="icon">📋</span>Diseño de Esquemas</h2>
+                
+                <h3>Principios Fundamentales</h3>
+                <p>A diferencia de las bases relacionales, MongoDB no impone un esquema fijo, pero esto no significa que no debas diseñar cuidadosamente la estructura de tus documentos.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🎯 Diseña para tu aplicación</h4>
+                        <p>Estructura los documentos según cómo tu aplicación accede a los datos, no según la normalización relacional.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📊 Considera los patrones de consulta</h4>
+                        <p>Optimiza para las consultas más frecuentes. Desnormaliza si es necesario para mejorar performance.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📏 Límites de documentos</h4>
+                        <p>Máximo 16MB por documento. Diseña pensando en el crecimiento de datos.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔄 Evolución del esquema</h4>
+                        <p>Planifica cómo evolucionará tu esquema. MongoDB permite cambios graduales.</p>
+                    </div>
+                </div>
+
+                <h3>Embedding vs Referencing</h3>
+                
+                <div class="schema-example">
+                    <h5>📦 Embedding (Documentos Anidados)</h5>
+                    <p><strong>Cuándo usar:</strong> Relación 1:1 o 1:pocos, datos que se consultan juntos</p>
+                    <div class="code-block">
+// Ejemplo: Blog post con comentarios
+{
+  "_id": ObjectId("..."),
+  "titulo": "Introducción a MongoDB",
+  "contenido": "MongoDB es una base de datos...",
+  "autor": "María García",
+  "fechaPublicacion": ISODate("2024-01-15"),
+  "comentarios": [
+    {
+      "autor": "Juan López",
+      "texto": "Excelente artículo!",
+      "fecha": ISODate("2024-01-16")
+    },
+    {
+      "autor": "Ana Martín",
+      "texto": "Muy útil, gracias",
+      "fecha": ISODate("2024-01-17")
+    }
+  ],
+  "tags": ["mongodb", "nosql", "tutorial"]
+}
+                    </div>
+                    <p><strong>Ventajas:</strong> Una sola consulta, atomicidad, mejor performance para lecturas</p>
+                    <p><strong>Desventajas:</strong> Documentos grandes, duplicación de datos, límite de 16MB</p>
+                </div>
+
+                <div class="schema-example">
+                    <h5>🔗 Referencing (Referencias)</h5>
+                    <p><strong>Cuándo usar:</strong> Relación 1:muchos o muchos:muchos, datos que crecen indefinidamente</p>
+                    <div class="code-block">
+// Colección: usuarios
+{
+  "_id": ObjectId("507f1f77bcf86cd799439011"),
+  "nombre": "Juan Pérez",
+  "email": "juan@email.com"
+}
+
+// Colección: pedidos
+{
+  "_id": ObjectId("507f1f77bcf86cd799439012"),
+  "usuarioId": ObjectId("507f1f77bcf86cd799439011"),
+  "productos": [
+    {
+      "productoId": ObjectId("507f1f77bcf86cd799439013"),
+      "cantidad": 2,
+      "precio": 25.99
+    }
+  ],
+  "total": 51.98,
+  "fecha": ISODate("2024-01-15")
+}
+
+// Consulta con $lookup (JOIN)
+db.pedidos.aggregate([
+  {
+    $lookup: {
+      from: "usuarios",
+      localField: "usuarioId",
+      foreignField: "_id",
+      as: "usuario"
+    }
+  }
+])
+                    </div>
+                    <p><strong>Ventajas:</strong> Documentos más pequeños, menos duplicación, escalabilidad</p>
+                    <p><strong>Desventajas:</strong> Múltiples consultas, no hay integridad referencial automática</p>
+                </div>
+
+                <h3>Patrones de Diseño Comunes</h3>
+
+                <div class="mongodb-features">
+                    <div class="feature-card">
+                        <h5>🌳 Tree Pattern</h5>
+                        <p>Para estructuras jerárquicas como categorías o comentarios anidados.</p>
+                        <div class="code-block">
+{
+  "_id": ObjectId("..."),
+  "nombre": "Electrónicos",
+  "padre": null,
+  "ancestros": [],
+  "hijos": ["Smartphones", "Laptops"]
+}
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📊 Bucket Pattern</h5>
+                        <p>Para series temporales, agrupando datos por tiempo.</p>
+                        <div class="code-block">
+{
+  "_id": ObjectId("..."),
+  "sensor": "temp_01",
+  "fecha": ISODate("2024-01-15"),
+  "mediciones": [
+    { "hora": "00:00", "valor": 22.5 },
+    { "hora": "01:00", "valor": 21.8 }
+  ]
+}
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🔄 Polymorphic Pattern</h5>
+                        <p>Para documentos con estructuras similares pero diferentes.</p>
+                        <div class="code-block">
+// Producto físico
+{
+  "tipo": "fisico",
+  "nombre": "Laptop",
+  "peso": 2.5,
+  "dimensiones": "30x20x2cm"
+}
+
+// Producto digital
+{
+  "tipo": "digital",
+  "nombre": "Software",
+  "tamanoArchivo": "150MB",
+  "licencia": "MIT"
+}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="crud" class="section">
+                <h2><span class="icon">🔧</span>Operaciones CRUD</h2>
+                
+                <h3>Operaciones Básicas</h3>
+                <div class="crud-operations">
+                    <div class="crud-card create-card">
+                        <h4>CREATE</h4>
+                        <p>Insertar documentos</p>
+                        <p>insertOne(), insertMany()</p>
+                    </div>
+                    <div class="crud-card read-card">
+                        <h4>READ</h4>
+                        <p>Consultar documentos</p>
+                        <p>find(), findOne()</p>
+                    </div>
+                    <div class="crud-card update-card">
+                        <h4>UPDATE</h4>
+                        <p>Modificar documentos</p>
+                        <p>updateOne(), updateMany()</p>
+                    </div>
+                    <div class="crud-card delete-card">
+                        <h4>DELETE</h4>
+                        <p>Eliminar documentos</p>
+                        <p>deleteOne(), deleteMany()</p>
+                    </div>
+                </div>
+
+                <h3>CREATE - Inserción de Documentos</h3>
+                <div class="code-block">
+// Insertar un documento
+db.usuarios.insertOne({
+  nombre: "Ana García",
+  email: "ana@email.com",
+  edad: 25,
+  fechaRegistro: new Date(),
+  activo: true
+});
+
+// Insertar múltiples documentos
+db.usuarios.insertMany([
+  {
+    nombre: "Carlos López",
+    email: "carlos@email.com",
+    edad: 30
+  },
+  {
+    nombre: "María Rodríguez",
+    email: "maria@email.com",
+    edad: 28
+  }
+]);
+
+// Inserción con _id personalizado
+db.productos.insertOne({
+  _id: "PROD-001",
+  nombre: "Laptop Gaming",
+  precio: 1299.99,
+  categoria: "Electrónicos"
+});
+                </div>
+
+                <h3>READ - Consultas</h3>
+                <div class="code-block">
+// Buscar todos los documentos
+db.usuarios.find();
+
+// Buscar con filtro
+db.usuarios.find({ edad: { $gte: 25 } });
+
+// Buscar uno específico
+db.usuarios.findOne({ email: "ana@email.com" });
+
+// Proyección (seleccionar campos específicos)
+db.usuarios.find(
+  { activo: true },
+  { nombre: 1, email: 1, _id: 0 }
+);
+
+// Ordenamiento y límite
+db.usuarios.find()
+  .sort({ fechaRegistro: -1 })
+  .limit(10);
+
+// Consultas complejas
+db.productos.find({
+  $and: [
+    { precio: { $gte: 100, $lte: 1000 } },
+    { categoria: "Electrónicos" },
+    { stock: { $gt: 0 } }
+  ]
+});
+
+// Búsqueda en arrays
+db.usuarios.find({ intereses: "tecnología" });
+
+// Búsqueda en documentos anidados
+db.usuarios.find({ "direccion.ciudad": "Buenos Aires" });
+
+// Expresiones regulares
+db.usuarios.find({ nombre: /^Ana/ });
+                </div>
+
+                <h3>UPDATE - Modificaciones</h3>
+                <div class="code-block">
+// Actualizar un documento
+db.usuarios.updateOne(
+  { email: "ana@email.com" },
+  { $set: { edad: 26, ultimaActividad: new Date() } }
+);
+
+// Actualizar múltiples documentos
+db.usuarios.updateMany(
+  { activo: false },
+  { $set: { fechaBaja: new Date() } }
+);
+
+// Operadores de actualización
+db.usuarios.updateOne(
+  { _id: ObjectId("...") },
+  {
+    $set: { nombre: "Ana García López" },
+    $inc: { puntos: 10 },
+    $push: { intereses: "fotografía" },
+    $addToSet: { tags: "premium" },
+    $unset: { campoTemporal: "" }
+  }
+);
+
+// Upsert (insertar si no existe)
+db.configuracion.updateOne(
+  { clave: "tema" },
+  { $set: { valor: "oscuro" } },
+  { upsert: true }
+);
+
+// Actualización con pipeline de agregación
+db.productos.updateMany(
+  {},
+  [
+    {
+      $set: {
+        precioConDescuento: {
+          $multiply: ["$precio", 0.9]
+        }
+      }
+    }
+  ]
+);
+                </div>
+
+                <h3>DELETE - Eliminación</h3>
+                <div class="code-block">
+// Eliminar un documento
+db.usuarios.deleteOne({ email: "usuario@eliminar.com" });
+
+// Eliminar múltiples documentos
+db.usuarios.deleteMany({ activo: false });
+
+// Eliminar todos los documentos de una colección
+db.logs.deleteMany({});
+
+// Eliminar colección completa
+db.temporal.drop();
+
+// Soft delete (marcado como eliminado)
+db.usuarios.updateOne(
+  { _id: ObjectId("...") },
+  {
+    $set: {
+      eliminado: true,
+      fechaEliminacion: new Date()
+    }
+  }
+);
+                </div>
+
+                <h3>Operaciones Avanzadas</h3>
+                <div class="code-block">
+// Transacciones (MongoDB 4.0+)
+const session = db.getMongo().startSession();
+session.startTransaction();
+
+try {
+  db.cuentas.updateOne(
+    { _id: "cuenta_a" },
+    { $inc: { saldo: -100 } },
+    { session }
+  );
+  
+  db.cuentas.updateOne(
+    { _id: "cuenta_b" },
+    { $inc: { saldo: 100 } },
+    { session }
+  );
+  
+  session.commitTransaction();
+} catch (error) {
+  session.abortTransaction();
+  throw error;
+} finally {
+  session.endSession();
+}
+
+// Bulk operations
+const bulk = db.productos.initializeUnorderedBulkOp();
+bulk.insert({ nombre: "Producto 1", precio: 10 });
+bulk.find({ precio: { $lt: 5 } }).update({ $inc: { precio: 1 } });
+bulk.find({ stock: 0 }).remove();
+bulk.execute();
+                </div>
+            </section>
+
+            <section id="practica-guiada" class="section">
+                <h2><span class="icon">✍️</span>Ejercitación Guiada con MongoDB</h2>
+
+                <div class="highlight">
+                    <h4>Propósito de la ejercitación</h4>
+                    <p>Antes de avanzar sobre los datos definitivos del Hito 4, el grupo realizará estas actividades en una base de práctica independiente llamada <code>fixture2030_practica</code>. Las sentencias permiten experimentar con inserción, recuperación, actualización, eliminación, agregación e índices sin fijar la solución de las colecciones que deberán diseñar para la entrega.</p>
+                </div>
+
+                <h3>Secuencia sugerida de trabajo</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Etapa</th>
+                            <th>Tiempo sugerido</th>
+                            <th>Resultado esperado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Conexión y exploración</td>
+                            <td>10 min</td>
+                            <td>Conexión funcional desde mongosh o Compass y selección de la base de práctica.</td>
+                        </tr>
+                        <tr>
+                            <td>Inserción y lectura</td>
+                            <td>20 min</td>
+                            <td>Documentos de práctica cargados y recuperados mediante filtros y proyecciones.</td>
+                        </tr>
+                        <tr>
+                            <td>Actualización y eliminación</td>
+                            <td>15 min</td>
+                            <td>Comprensión de operadores de modificación y conservación de la integridad de datos.</td>
+                        </tr>
+                        <tr>
+                            <td>Agregación e índices</td>
+                            <td>20 min</td>
+                            <td>Consulta consolidada y evidencia del efecto de un índice sobre una consulta seleccionada.</td>
+                        </tr>
+                        <tr>
+                            <td>Desafío de transferencia</td>
+                            <td>25 min</td>
+                            <td>Decisiones iniciales que puedan trasladarse al módulo del Hito 4, sin construir su solución completa.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Práctica 1 — Conexión y creación de la base</h3>
+                <p>Abrir <code>mongosh</code> dentro del contenedor o desde la terminal de la notebook. Luego, seleccionar una base de trabajo separada de la base que utilizarán en el Hito 4.</p>
+                <div class="code-block">
+// Si se usa mongosh dentro del contenedor:
+docker exec -it fixture2030-mongodb mongosh
+
+// Seleccionar una base de práctica
+use fixture2030_practica
+
+// Comprobar cuál es la base activa
+db.getName()
+                </div>
+
+                <h3>Práctica 2 — Insertar documentos de referencia</h3>
+                <p>Ejecutar el siguiente conjunto pequeño de documentos para disponer de información sobre la cual practicar. La estructura es exclusivamente didáctica: no representa la solución esperada del Hito 4.</p>
+                <div class="code-block">
+db.equipos.insertMany([
+  {
+    codigo: "ARG",
+    nombre: "Argentina",
+    confederacion: "CONMEBOL",
+    ranking: 3,
+    sedeBase: "Buenos Aires"
+  },
+  {
+    codigo: "JPN",
+    nombre: "Japón",
+    confederacion: "AFC",
+    ranking: 15,
+    sedeBase: "Tokio"
+  },
+  {
+    codigo: "MAR",
+    nombre: "Marruecos",
+    confederacion: "CAF",
+    ranking: 12,
+    sedeBase: "Rabat"
+  }
+])
+
+db.jugadores.insertMany([
+  { codigo: "ARG-10", equipoCodigo: "ARG", posicion: "Delantero", convocado: true, partidosInternacionales: 190 },
+  { codigo: "ARG-01", equipoCodigo: "ARG", posicion: "Arquero", convocado: true, partidosInternacionales: 40 },
+  { codigo: "JPN-07", equipoCodigo: "JPN", posicion: "Mediocampista", convocado: true, partidosInternacionales: 75 },
+  { codigo: "MAR-09", equipoCodigo: "MAR", posicion: "Delantero", convocado: false, partidosInternacionales: 31 }
+])
+                </div>
+
+                <h3>Práctica 3 — Recuperar información</h3>
+                <p>Ejecutar y modificar las siguientes consultas. Luego, crear una consulta propia que responda a una necesidad de recuperación del Fixture 2030.</p>
+                <div class="code-block">
+// Recuperar todos los equipos
+db.equipos.find()
+
+// Buscar un equipo por un criterio de identificación
+db.equipos.findOne({ codigo: "ARG" })
+
+// Filtrar equipos según una condición numérica
+db.equipos.find({ ranking: { $lte: 12 } })
+
+// Recuperar solo los campos necesarios
+db.equipos.find(
+  { confederacion: "CONMEBOL" },
+  { _id: 0, codigo: 1, nombre: 1, ranking: 1 }
+)
+
+// Recuperar jugadores de un equipo, ordenar y limitar
+db.jugadores.find({ equipoCodigo: "ARG" })
+  .sort({ partidosInternacionales: -1 })
+  .limit(5)
+                </div>
+
+                <h3>Práctica 4 — Actualizar y eliminar de forma controlada</h3>
+                <p>Las actualizaciones deben incluir siempre un filtro específico. Antes de eliminar datos, comprobar el conjunto de documentos que resultará afectado.</p>
+                <div class="code-block">
+// Actualizar información de un equipo
+db.equipos.updateOne(
+  { codigo: "MAR" },
+  { $set: { ranking: 10 } }
+)
+
+// Actualizar varios jugadores que cumplan una condición
+db.jugadores.updateMany(
+  { equipoCodigo: "ARG" },
+  { $set: { disponibleParaFixture: true } }
+)
+
+// Incorporar un atributo a un documento existente
+db.jugadores.updateOne(
+  { codigo: "JPN-07" },
+  { $set: { estadoRevision: "pendiente" } }
+)
+
+// Eliminar solo el documento de práctica creado para esta operación
+db.jugadores.deleteOne({ codigo: "MAR-09" })
+                </div>
+
+                <h3>Práctica 5 — Agregación</h3>
+                <p>El pipeline siguiente consolida la cantidad de jugadores cargados por equipo. Luego, cada grupo deberá proponer una pregunta de análisis distinta que pueda responderse con un pipeline de agregación.</p>
+                <div class="code-block">
+db.jugadores.aggregate([
+  { $match: { convocado: true } },
+  {
+    $group: {
+      _id: "$equipoCodigo",
+      cantidadJugadores: { $sum: 1 },
+      promedioPartidos: { $avg: "$partidosInternacionales" }
+    }
+  },
+  { $sort: { cantidadJugadores: -1 } }
+])
+                </div>
+
+                <h3>Práctica 6 — Índices y análisis de ejecución</h3>
+                <p>Primero ejecutar la consulta con <code>explain()</code>. Luego crear un índice asociado al patrón de búsqueda y repetir la verificación. Registrar qué cambia y por qué.</p>
+                <div class="code-block">
+// Analizar el plan de una consulta frecuente
+db.jugadores.find({ equipoCodigo: "ARG" }).explain("executionStats")
+
+// Crear un índice alineado con el filtro utilizado
+db.jugadores.createIndex({ equipoCodigo: 1 })
+
+// Repetir el análisis después de indexar
+db.jugadores.find({ equipoCodigo: "ARG" }).explain("executionStats")
+
+// Listar los índices de la colección
+db.jugadores.getIndexes()
+                </div>
+
+                <h3>Desafío de transferencia al Hito 4</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>📋 Modelado</h4>
+                        <p>Identificar qué información de la práctica podría permanecer junta en un documento y qué información requeriría una relación distinta al alcanzar el volumen real del Fixture 2030.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔎 Recuperación</h4>
+                        <p>Definir qué consultas resultarán esenciales para el módulo de equipos y jugadores y qué atributos deberían devolver.</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚡ Escalabilidad</h4>
+                        <p>Seleccionar un patrón de consulta que pudiera degradarse al superar los mil jugadores y anticipar cómo se evaluará su rendimiento.</p>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h4>Entorno de práctica frente a entrega del Hito 4</h4>
+                    <p>Los documentos y sentencias de esta sección son un laboratorio de aprendizaje. El Hito 4 requiere que cada grupo diseñe su propio modelo, mecanismo de carga y conjunto de consultas para los datos completos del Fixture 2030. No se debe copiar este conjunto mínimo como solución final.</p>
+                </div>
+            </section>
+
+            <section id="indexacion" class="section">
+                <h2><span class="icon">⚡</span>Indexación y Performance</h2>
+                
+                <h3>Importancia de los Índices</h3>
+                <p>Los índices son estructuras de datos que mejoran la velocidad de las consultas. Sin índices, MongoDB debe examinar cada documento (collection scan), lo que es ineficiente para colecciones grandes.</p>
+
+                <div class="highlight">
+                    <h4>📊 Impacto en Performance</h4>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Sin índice:</strong> O(n) - examina todos los documentos</li>
+                        <li><strong>Con índice:</strong> O(log n) - búsqueda logarítmica</li>
+                        <li><strong>Ejemplo:</strong> En 1 millón de documentos, sin índice = 1M operaciones, con índice = ~20 operaciones</li>
+                    </ul>
+                </div>
+
+                <h3>Tipos de Índices</h3>
+                <div class="mongodb-features">
+                    <div class="feature-card">
+                        <h5>🔍 Single Field</h5>
+                        <p>Índice en un solo campo. El más básico y común.</p>
+                        <div class="code-block">
+db.usuarios.createIndex({ email: 1 })
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📊 Compound</h5>
+                        <p>Índice en múltiples campos. Orden importa.</p>
+                        <div class="code-block">
+db.productos.createIndex({ categoria: 1, precio: -1 })
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📝 Text</h5>
+                        <p>Búsqueda de texto completo en strings.</p>
+                        <div class="code-block">
+db.articulos.createIndex({ titulo: "text", contenido: "text" })
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🌍 Geospatial</h5>
+                        <p>Para consultas geográficas y de proximidad.</p>
+                        <div class="code-block">
+db.lugares.createIndex({ ubicacion: "2dsphere" })
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🔢 Partial</h5>
+                        <p>Índice solo en documentos que cumplen condición.</p>
+                        <div class="code-block">
+db.usuarios.createIndex(
+  { email: 1 },
+  { partialFilterExpression: { activo: true } }
+)
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>⏰ TTL</h5>
+                        <p>Elimina documentos automáticamente después de tiempo.</p>
+                        <div class="code-block">
+db.sesiones.createIndex(
+  { fechaCreacion: 1 },
+  { expireAfterSeconds: 3600 }
+)
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Gestión de Índices</h3>
+                <div class="code-block">
+// Crear índices
+db.usuarios.createIndex({ email: 1 }, { unique: true });
+db.productos.createIndex({ nombre: 1, categoria: 1 });
+
+// Listar índices
+db.usuarios.getIndexes();
+
+// Información sobre uso de índices
+db.usuarios.find({ email: "ana@email.com" }).explain("executionStats");
+
+// Eliminar índice
+db.usuarios.dropIndex({ email: 1 });
+db.usuarios.dropIndex("email_1");
+
+// Reindexar colección
+db.usuarios.reIndex();
+
+// Índice en background (no bloquea escrituras)
+db.productos.createIndex(
+  { descripcion: "text" },
+  { background: true }
+);
+
+// Índice sparse (solo documentos con el campo)
+db.usuarios.createIndex(
+  { telefono: 1 },
+  { sparse: true }
+);
+                </div>
+
+                <h3>Optimización de Consultas</h3>
+                <div class="code-block">
+// Analizar plan de ejecución
+db.usuarios.find({ edad: { $gte: 25 } }).explain("executionStats");
+
+// Resultado del explain:
+{
+  "executionStats": {
+    "totalExamined": 1000,     // Documentos examinados
+    "totalDocsReturned": 250,  // Documentos devueltos
+    "executionTimeMillis": 45, // Tiempo de ejecución
+    "indexesUsed": ["edad_1"]  // Índices utilizados
+  }
+}
+
+// Hint para forzar uso de índice específico
+db.productos.find({ categoria: "Electrónicos" })
+  .hint({ categoria: 1, precio: -1 });
+
+// Profiling para identificar consultas lentas
+db.setProfilingLevel(2, { slowms: 100 });
+db.system.profile.find().sort({ ts: -1 }).limit(5);
+                </div>
+
+                <h3>Mejores Prácticas</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🎯 Índices Selectivos</h4>
+                        <p>Crea índices en campos que se usan frecuentemente en consultas y que tienen alta cardinalidad.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📏 Orden en Índices Compuestos</h4>
+                        <p>Coloca campos de igualdad primero, luego rangos, finalmente ordenamiento.</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚖️ Balance Lectura/Escritura</h4>
+                        <p>Más índices = lecturas más rápidas pero escrituras más lentas. Encuentra el equilibrio.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📊 Monitoreo Continuo</h4>
+                        <p>Usa explain() regularmente y monitorea métricas de performance en producción.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="agregacion" class="section">
+                <h2><span class="icon">📊</span>Pipeline de Agregación</h2>
+                
+                <h3>¿Qué es el Pipeline de Agregación?</h3>
+                <p>El pipeline de agregación es un framework para transformar y analizar datos. Permite realizar operaciones complejas como agrupaciones, cálculos, filtros y transformaciones en múltiples etapas.</p>
+
+                <div class="code-block">
+// Estructura básica del pipeline
+db.coleccion.aggregate([
+  { $match: { /* filtros */ } },
+  { $group: { /* agrupación */ } },
+  { $sort: { /* ordenamiento */ } },
+  { $project: { /* proyección */ } }
+]);
+                </div>
+
+                <h3>Etapas Principales</h3>
+                <div class="mongodb-features">
+                    <div class="feature-card">
+                        <h5>🔍 $match</h5>
+                        <p>Filtra documentos (equivalente a WHERE en SQL)</p>
+                        <div class="code-block">
+{ $match: { edad: { $gte: 18 }, activo: true } }
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📊 $group</h5>
+                        <p>Agrupa documentos y calcula valores (GROUP BY)</p>
+                        <div class="code-block">
+{
+  $group: {
+    _id: "$categoria",
+    total: { $sum: "$precio" },
+    promedio: { $avg: "$precio" },
+    count: { $sum: 1 }
+  }
+}
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📋 $project</h5>
+                        <p>Selecciona y transforma campos (SELECT)</p>
+                        <div class="code-block">
+{
+  $project: {
+    nombre: 1,
+    precioConIVA: { $multiply: ["$precio", 1.21] },
+    _id: 0
+  }
+}
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🔄 $sort</h5>
+                        <p>Ordena documentos (ORDER BY)</p>
+                        <div class="code-block">
+{ $sort: { fecha: -1, precio: 1 } }
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📏 $limit / $skip</h5>
+                        <p>Paginación de resultados</p>
+                        <div class="code-block">
+{ $skip: 20 },
+{ $limit: 10 }
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🔗 $lookup</h5>
+                        <p>JOIN entre colecciones</p>
+                        <div class="code-block">
+{
+  $lookup: {
+    from: "usuarios",
+    localField: "usuarioId",
+    foreignField: "_id",
+    as: "usuario"
+  }
+}
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Ejemplos Prácticos</h3>
+
+                <div class="schema-example">
+                    <h5>📈 Análisis de Ventas por Categoría</h5>
+                    <div class="code-block">
+db.ventas.aggregate([
+  // Filtrar ventas del último mes
+  {
+    $match: {
+      fecha: {
+        $gte: new Date("2024-01-01"),
+        $lt: new Date("2024-02-01")
+      }
+    }
+  },
+  // Agrupar por categoría
+  {
+    $group: {
+      _id: "$categoria",
+      totalVentas: { $sum: "$monto" },
+      cantidadVentas: { $sum: 1 },
+      promedioVenta: { $avg: "$monto" },
+      maxVenta: { $max: "$monto" },
+      minVenta: { $min: "$monto" }
+    }
+  },
+  // Ordenar por total de ventas
+  {
+    $sort: { totalVentas: -1 }
+  },
+  // Formatear resultado
+  {
+    $project: {
+      categoria: "$_id",
+      totalVentas: { $round: ["$totalVentas", 2] },
+      cantidadVentas: 1,
+      promedioVenta: { $round: ["$promedioVenta", 2] },
+      _id: 0
+    }
+  }
+]);
+                    </div>
+                </div>
+
+                <div class="schema-example">
+                    <h5>👥 Top 10 Usuarios Más Activos</h5>
+                    <div class="code-block">
+db.actividades.aggregate([
+  // Agrupar por usuario
+  {
+    $group: {
+      _id: "$usuarioId",
+      totalActividades: { $sum: 1 },
+      ultimaActividad: { $max: "$fecha" },
+      tiposActividad: { $addToSet: "$tipo" }
+    }
+  },
+  // JOIN con colección usuarios
+  {
+    $lookup: {
+      from: "usuarios",
+      localField: "_id",
+      foreignField: "_id",
+      as: "usuario"
+    }
+  },
+  // Descomponer array de usuario
+  {
+    $unwind: "$usuario"
+  },
+  // Proyectar campos necesarios
+  {
+    $project: {
+      nombre: "$usuario.nombre",
+      email: "$usuario.email",
+      totalActividades: 1,
+      ultimaActividad: 1,
+      cantidadTipos: { $size: "$tiposActividad" },
+      _id: 0
+    }
+  },
+  // Ordenar por actividades
+  {
+    $sort: { totalActividades: -1 }
+  },
+  // Top 10
+  {
+    $limit: 10
+  }
+]);
+                    </div>
+                </div>
+
+                <div class="schema-example">
+                    <h5>📊 Análisis Temporal de Registros</h5>
+                    <div class="code-block">
+db.usuarios.aggregate([
+  // Agregar campos de fecha
+  {
+    $addFields: {
+      año: { $year: "$fechaRegistro" },
+      mes: { $month: "$fechaRegistro" },
+      diaSemana: { $dayOfWeek: "$fechaRegistro" }
+    }
+  },
+  // Agrupar por año y mes
+  {
+    $group: {
+      _id: {
+        año: "$año",
+        mes: "$mes"
+      },
+      registros: { $sum: 1 },
+      usuariosActivos: {
+        $sum: { $cond: [{ $eq: ["$activo", true] }, 1, 0] }
+      }
+    }
+  },
+  // Calcular porcentaje de activos
+  {
+    $addFields: {
+      porcentajeActivos: {
+        $multiply: [
+          { $divide: ["$usuariosActivos", "$registros"] },
+          100
+        ]
+      }
+    }
+  },
+  // Ordenar por fecha
+  {
+    $sort: {
+      "_id.año": 1,
+      "_id.mes": 1
+    }
+  }
+]);
+                    </div>
+                </div>
+
+                <h3>Operadores Avanzados</h3>
+                <div class="code-block">
+// Operadores de array
+{
+  $project: {
+    nombre: 1,
+    cantidadIntereses: { $size: "$intereses" },
+    primerInteres: { $arrayElemAt: ["$intereses", 0] },
+    tieneDeportes: { $in: ["deportes", "$intereses"] }
+  }
+}
+
+// Operadores condicionales
+{
+  $project: {
+    nombre: 1,
+    categoria: {
+      $switch: {
+        branches: [
+          { case: { $lt: ["$edad", 18] }, then: "Menor" },
+          { case: { $lt: ["$edad", 65] }, then: "Adulto" },
+          { case: { $gte: ["$edad", 65] }, then: "Senior" }
+        ],
+        default: "Desconocido"
+      }
+    }
+  }
+}
+
+// Operadores de fecha
+{
+  $project: {
+    nombre: 1,
+    añoRegistro: { $year: "$fechaRegistro" },
+    mesRegistro: { $month: "$fechaRegistro" },
+    diasDesdeRegistro: {
+      $divide: [
+        { $subtract: [new Date(), "$fechaRegistro"] },
+        1000 * 60 * 60 * 24
+      ]
+    }
+  }
+}
+                </div>
+            </section>
+
+            <section id="replicacion" class="section">
+                <h2><span class="icon">🔄</span>Replicación y Sharding</h2>
+                
+                <h3>Replica Sets</h3>
+                <p>Un Replica Set es un grupo de instancias MongoDB que mantienen el mismo conjunto de datos. Proporciona redundancia y alta disponibilidad.</p>
+
+                <div class="mongodb-features">
+                    <div class="feature-card">
+                        <h5>👑 Primary</h5>
+                        <p>Nodo principal que recibe todas las escrituras. Solo puede haber uno.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>📚 Secondary</h5>
+                        <p>Nodos que replican datos del Primary. Pueden servir lecturas.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h5>🗳️ Arbiter</h5>
+                        <p>Nodo que solo vota en elecciones, no almacena datos.</p>
+                    </div>
+                </div>
+
+                <h3>Configuración de Replica Set</h3>
+                <div class="code-block">
+# Docker Compose para Replica Set
+version: '3.8'
+services:
+  mongo1:
+    image: mongo:7.0
+    command: mongod --replSet rs0 --port 27017
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo1_data:/data/db
+
+  mongo2:
+    image: mongo:7.0
+    command: mongod --replSet rs0 --port 27018
+    ports:
+      - "27018:27018"
+    volumes:
+      - mongo2_data:/data/db
+
+  mongo3:
+    image: mongo:7.0
+    command: mongod --replSet rs0 --port 27019
+    ports:
+      - "27019:27019"
+    volumes:
+      - mongo3_data:/data/db
+
+volumes:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
+                </div>
+
+                <div class="code-block">
+// Inicializar Replica Set
+rs.initiate({
+  _id: "rs0",
+  members: [
+    { _id: 0, host: "localhost:27017", priority: 2 },
+    { _id: 1, host: "localhost:27018", priority: 1 },
+    { _id: 2, host: "localhost:27019", priority: 1 }
+  ]
+});
+
+// Verificar estado
+rs.status();
+
+// Configurar read preference
+db.usuarios.find().readPref("secondary");
+
+// Write concern para replica set
+db.usuarios.insertOne(
+  { nombre: "Test" },
+  { writeConcern: { w: "majority", j: true } }
+);
+                </div>
+
+                <h3>Sharding (Particionamiento Horizontal)</h3>
+                <p>Sharding distribuye datos entre múltiples máquinas. MongoDB soporta sharding automático basado en una shard key.</p>
+
+                <div class="code-block">
+// Habilitar sharding en base de datos
+sh.enableSharding("tienda");
+
+// Crear índice en shard key
+db.productos.createIndex({ categoria: 1, _id: 1 });
+
+// Configurar sharding en colección
+sh.shardCollection("tienda.productos", { categoria: 1, _id: 1 });
+
+// Ver distribución de chunks
+sh.status();
+
+// Balanceador automático
+sh.getBalancerState();
+sh.setBalancerState(true);
+                </div>
+
+                <h3>Estrategias de Shard Key</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🎯 Alta Cardinalidad</h4>
+                        <p>Muchos valores únicos para distribución uniforme. Evita hotspots.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📊 Baja Frecuencia</h4>
+                        <p>Valores que no cambian frecuentemente. Evita migraciones constantes.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔄 No Monótona</h4>
+                        <p>Evita valores que siempre crecen (timestamps, ObjectIds). Causa hotspots.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🎪 Consultas Dirigidas</h4>
+                        <p>Incluye la shard key en consultas frecuentes para evitar broadcast.</p>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h4>⚠️ Consideraciones Importantes</h4>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Shard key inmutable:</strong> No se puede cambiar después de sharding</li>
+                        <li><strong>Límite de documento:</strong> 16MB por documento en todos los shards</li>
+                        <li><strong>Transacciones:</strong> Limitadas dentro del mismo shard en versiones anteriores</li>
+                        <li><strong>Complejidad operacional:</strong> Requiere más monitoreo y mantenimiento</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="tpo" class="section">
+                <h2><span class="icon">🎯</span>Hito 4 — Módulo Documental del Fixture 2030</h2>
+                
+                <div class="highlight">
+                    <h4>Entregable: Colecciones de equipos y jugadores</h4>
+                    <p>Implementar el primer módulo de persistencia de la plataforma del Fixture 2030 utilizando MongoDB. El módulo deberá almacenar, recuperar y actualizar información de los 64 equipos y de más de 1.000 jugadores, respetando las decisiones tomadas en los hitos previos.</p>
+                </div>
+
+                <h3>Estructura del Entregable</h3>
+                <div class="code-block">
+fixture2030-mongodb/
+├── docker-compose.yml          # Ambiente local de MongoDB
+├── init-scripts/               # Inicialización y carga de datos
+├── schemas/                    # Diseño y validación documental
+├── queries/                    # Operaciones de carga y recuperación
+├── docs/                       # Decisiones y evidencia de pruebas
+└── README.md                   # Instrucciones de ejecución
+                </div>
+
+                <h3>Componentes Requeridos</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🐳 Ambiente MongoDB</h4>
+                        <ul style="margin-left: 15px; margin-top: 10px;">
+                            <li>MongoDB ejecutándose en Docker Compose</li>
+                            <li>Persistencia de datos configurada</li>
+                            <li>Variables de entorno documentadas</li>
+                            <li>Procedimiento de inicio y verificación</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>📋 Colecciones documentales</h4>
+                        <ul style="margin-left: 15px; margin-top: 10px;">
+                            <li>Colecciones para equipos y jugadores</li>
+                            <li>Decisión fundamentada de embedding y referencias</li>
+                            <li>Reglas de validación de información esencial</li>
+                            <li>Índices alineados con las consultas requeridas</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>🔧 Carga y actualización</h4>
+                        <ul style="margin-left: 15px; margin-top: 10px;">
+                            <li>Carga reproducible de 64 equipos y más de 1.000 jugadores</li>
+                            <li>Operaciones de inserción y actualización</li>
+                            <li>Validación de datos y manejo de inconsistencias</li>
+                            <li>Registro de la evidencia de carga</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>📊 Recuperación y rendimiento</h4>
+                        <ul style="margin-left: 15px; margin-top: 10px;">
+                            <li>Consultas funcionales de recuperación de información</li>
+                            <li>Filtros, proyecciones, ordenamiento y paginación</li>
+                            <li>Al menos una consulta de agregación</li>
+                            <li>Análisis de eficiencia mediante índices o explain()</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Alcance del modelo documental</h3>
+                <div class="schema-example">
+                    <h5>📄 Datos del Fixture 2030</h5>
+                    <p>El grupo deberá diseñar el modelo documental para equipos y jugadores de acuerdo con los requisitos del Fixture 2030. La estructura concreta de los documentos, las reglas de validación, las referencias, los índices y las consultas deberán ser decisiones fundamentadas por el equipo.</p>
+                </div>
+
+                <h3>Criterios de Evaluación</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🏗️ Diseño documental (25%)</h4>
+                        <ul style="margin-left: 15px; margin-top: 10px;">
+                            <li>Coherencia con la matriz de decisión y la arquitectura</li>
+                            <li>Decisiones justificadas de modelado</li>
+                            <li>Reglas de validación adecuadas</li>
+                            <li>Estructura organizada del módulo</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>⚡ Funcionalidad (35%)</h4>
+                        <ul style="margin-left: 15px; margin-top: 10px;">
+                            <li>Carga verificable de los volúmenes requeridos</li>
+                            <li>Operaciones de recuperación y actualización correctas</li>
+                            <li>Integridad de los datos cargados</li>
+                            <li>Procedimiento reproducible en Docker</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>🚀 Rendimiento (25%)</h4>
+                        <ul style="margin-left: 15px; margin-top: 10px;">
+                            <li>Índices alineados con las consultas</li>
+                            <li>Consultas eficientes y justificadas</li>
+                            <li>Uso apropiado de operaciones de agregación</li>
+                            <li>Evidencia de análisis de ejecución</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>📚 Documentación (15%)</h4>
+                        <ul style="margin-left: 15px; margin-top: 10px;">
+                            <li>README claro y completo</li>
+                            <li>Decisiones de diseño documentadas</li>
+                            <li>Instrucciones de instalación y ejecución</li>
+                            <li>Evidencia de las pruebas solicitadas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Herramientas Recomendadas</h3>
+                <ul style="margin-left: 20px;">
+                    <li><strong>MongoDB Compass:</strong> Exploración y análisis de colecciones</li>
+                    <li><strong>MongoDB for VS Code:</strong> Extensión para desarrollo</li>
+                    <li><strong>Docker Desktop:</strong> Ejecución local del ambiente</li>
+                    <li><strong>mongosh:</strong> Ejecución y prueba de operaciones</li>
+                    <li><strong>MongoDB Documentation:</strong> Consulta técnica de referencia</li>
+                </ul>
+
+            </section>
+
+            <section id="proxima" class="section">
+                <h2><span class="icon">➡️</span>Próxima Clase</h2>
+                
+                <div class="highlight">
+                    <h4>Clase 5: Neo4j - Bases de Grafos</h4>
+                    <p>En la próxima sesión implementaremos el componente de grafos:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Configuración de Neo4j con Docker</li>
+                        <li>Modelado de datos como grafos</li>
+                        <li>Lenguaje Cypher para consultas</li>
+                        <li>Algoritmos de grafos y análisis de redes</li>
+                        <li><strong>Hito 5:</strong> Módulo de grafos para relaciones deportivas del Fixture 2030</li>
+                    </ul>
+                </div>
+
+                <h3>Preparación Requerida</h3>
+                <ul style="margin-left: 20px;">
+                        <li><strong>Completar el módulo MongoDB</strong> y documentar las decisiones tomadas</li>
+                        <li>Instalar Neo4j Desktop o preparar Docker</li>
+                        <li>Revisar conceptos básicos de teoría de grafos</li>
+                        <li>Identificar relaciones del Fixture 2030 que se beneficien de grafos</li>
+                        <li>Preparar los datos necesarios para el próximo hito</li>
+                </ul>
+
+                <h3>Recursos para Estudio</h3>
+                <ul style="margin-left: 20px;">
+                    <li><a href="https://neo4j.com/docs/" target="_blank">Neo4j Documentation</a></li>
+                    <li><a href="https://neo4j.com/graphacademy/" target="_blank">Neo4j GraphAcademy (cursos gratuitos)</a></li>
+                    <li><a href="https://neo4j.com/developer/cypher/" target="_blank">Cypher Query Language</a></li>
+                    <li><a href="https://neo4j.com/docs/getting-started/data-modeling/" target="_blank">Graph Data Modeling</a></li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const isVisible = sidebar.style.transform === 'translateX(0px)' || sidebar.style.transform === '';
+            sidebar.style.transform = isVisible ? 'translateX(-100%)' : 'translateX(0px)';
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.sidebar a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight current section in navigation
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.sidebar a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.background = '';
+                link.style.color = '#ecf0f1';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.background = '#34495e';
+                    link.style.color = '#27ae60';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
