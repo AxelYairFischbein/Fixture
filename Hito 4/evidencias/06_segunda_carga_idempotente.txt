@@ -1,0 +1,32 @@
+﻿{
+  "script": "02_seed.js",
+  "origin": "sintetico-grupo13-v1",
+  "dataset": "sintetico_no_oficial",
+  "expected": {
+    "teams": 64,
+    "playersPerTeam": 24,
+    "players": 1536
+  },
+  "pruned": {
+    "teams": 0,
+    "players": 0
+  },
+  "teamsBulk": {
+    "inserted": 0,
+    "matched": 64,
+    "modified": 0,
+    "upserted": 0
+  },
+  "playersBulk": {
+    "inserted": 0,
+    "matched": 1536,
+    "modified": 0,
+    "upserted": 0
+  },
+  "final": {
+    "teams": 64,
+    "players": 1536,
+    "orphans": 0
+  },
+  "status": "OK"
+}

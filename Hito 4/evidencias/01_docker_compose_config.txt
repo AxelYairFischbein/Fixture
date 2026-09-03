@@ -1,0 +1,44 @@
+﻿name: hito4
+services:
+  mongodb:
+    container_name: fixture2030-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: fixture2030
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_ROOT_USERNAME: admin
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'mongosh --quiet --username "$${MONGO_INITDB_ROOT_USERNAME}" --password "$${MONGO_INITDB_ROOT_PASSWORD}"
+          --authenticationDatabase admin --eval "if (!db.adminCommand({ ping: 1 }).ok)
+          { quit(2); }"'
+      timeout: 5s
+      interval: 5s
+      retries: 20
+      start_period: 20s
+    image: mongodb/mongodb-community-server:8.0-ubi8-slim
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 27017
+        published: "27017"
+        protocol: tcp
+    restart: unless-stopped
+    stop_grace_period: 30s
+    volumes:
+      - type: volume
+        source: mongodb_data
+        target: /data/db
+        volume: {}
+      - type: bind
+        source: C:\Users\denis\Documents\GitHub\Fixture\Hito 4\scripts
+        target: /workspace/scripts
+        read_only: true
+        bind: {}
+networks:
+  default:
+    name: hito4_default
+volumes:
+  mongodb_data:
+    name: hito4_mongodb_data

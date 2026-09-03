@@ -1,0 +1,22 @@
+﻿{
+  "script": "08_test_validation.js",
+  "tests": [
+    {
+      "name": "equipo_sin_campos_criticos_y_ranking_fuera_de_rango",
+      "rejected": true,
+      "mongoErrorCode": 121,
+      "reason": "Document failed validation"
+    },
+    {
+      "name": "jugador_con_posicion_invalida",
+      "rejected": true,
+      "mongoErrorCode": 121,
+      "reason": "Document failed validation"
+    }
+  ],
+  "leftovers": {
+    "teams": 0,
+    "players": 0
+  },
+  "status": "OK"
+}

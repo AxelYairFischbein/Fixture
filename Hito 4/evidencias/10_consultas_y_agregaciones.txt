@@ -1,0 +1,657 @@
+﻿{
+  "id": "Q01",
+  "objective": "Recuperar un equipo por su identificador de negocio.",
+  "collection": "equipos",
+  "filter": {
+    "equipoId": "EQ-013"
+  },
+  "returnedFields": [
+    "equipoId",
+    "codigo",
+    "nombre",
+    "confederacion",
+    "rankingReferencia"
+  ],
+  "relatedIndex": "uq_equipos_equipoId",
+  "expected": "Un ├║nico equipo.",
+  "result": {
+    "equipoId": "EQ-013",
+    "codigo": "F13",
+    "nombre": "Seleccion Sintetica 13",
+    "confederacion": "AFC",
+    "rankingReferencia": 13
+  }
+}
+{
+  "id": "Q02",
+  "objective": "Recuperar un jugador por su identificador de negocio.",
+  "collection": "jugadores",
+  "filter": {
+    "jugadorId": "JUG-0313"
+  },
+  "returnedFields": [
+    "jugadorId",
+    "nombre",
+    "apellido",
+    "equipoId",
+    "posicion",
+    "numeroCamiseta"
+  ],
+  "relatedIndex": "uq_jugadores_jugadorId",
+  "expected": "Un ├║nico jugador.",
+  "result": {
+    "jugadorId": "JUG-0313",
+    "equipoId": "EQ-014",
+    "nombre": "Nombre0313",
+    "apellido": "Apellido0313",
+    "posicion": "ARQUERO",
+    "numeroCamiseta": 1
+  }
+}
+{
+  "id": "Q03",
+  "objective": "Filtrar equipos de CONMEBOL y ordenarlos por ranking.",
+  "collection": "equipos",
+  "filter": {
+    "confederacion": "CONMEBOL",
+    "rankingReferencia": {
+      "$lte": 50
+    }
+  },
+  "returnedFields": [
+    "equipoId",
+    "nombre",
+    "rankingReferencia"
+  ],
+  "relatedIndex": "idx_equipos_confederacion_ranking",
+  "expected": "Equipos que cumplen el filtro, en ranking ascendente.",
+  "result": [
+    {
+      "equipoId": "EQ-004",
+      "nombre": "Seleccion Sintetica 04",
+      "rankingReferencia": 4
+    },
+    {
+      "equipoId": "EQ-010",
+      "nombre": "Seleccion Sintetica 10",
+      "rankingReferencia": 10
+    },
+    {
+      "equipoId": "EQ-016",
+      "nombre": "Seleccion Sintetica 16",
+      "rankingReferencia": 16
+    },
+    {
+      "equipoId": "EQ-022",
+      "nombre": "Seleccion Sintetica 22",
+      "rankingReferencia": 22
+    },
+    {
+      "equipoId": "EQ-028",
+      "nombre": "Seleccion Sintetica 28",
+      "rankingReferencia": 28
+    },
+    {
+      "equipoId": "EQ-034",
+      "nombre": "Seleccion Sintetica 34",
+      "rankingReferencia": 34
+    },
+    {
+      "equipoId": "EQ-040",
+      "nombre": "Seleccion Sintetica 40",
+      "rankingReferencia": 40
+    },
+    {
+      "equipoId": "EQ-046",
+      "nombre": "Seleccion Sintetica 46",
+      "rankingReferencia": 46
+    }
+  ]
+}
+{
+  "id": "Q04",
+  "objective": "Buscar delanteros con experiencia internacional y ordenarlos por partidos.",
+  "collection": "jugadores",
+  "filter": {
+    "posicion": "DELANTERO",
+    "partidosInternacionales": {
+      "$gte": 120
+    }
+  },
+  "returnedFields": [
+    "jugadorId",
+    "equipoId",
+    "apellido",
+    "partidosInternacionales",
+    "golesInternacionales"
+  ],
+  "relatedIndex": "idx_jugadores_posicion_partidos",
+  "expected": "Los primeros diez delanteros por partidos internacionales.",
+  "result": [
+    {
+      "jugadorId": "JUG-0336",
+      "equipoId": "EQ-014",
+      "apellido": "Apellido0336",
+      "partidosInternacionales": 180,
+      "golesInternacionales": 32
+    },
+    {
+      "jugadorId": "JUG-0310",
+      "equipoId": "EQ-013",
+      "apellido": "Apellido0310",
+      "partidosInternacionales": 179,
+      "golesInternacionales": 30
+    },
+    {
+      "jugadorId": "JUG-0672",
+      "equipoId": "EQ-028",
+      "apellido": "Apellido0672",
+      "partidosInternacionales": 179,
+      "golesInternacionales": 36
+    },
+    {
+      "jugadorId": "JUG-0284",
+      "equipoId": "EQ-012",
+      "apellido": "Apellido0284",
+      "partidosInternacionales": 178,
+      "golesInternacionales": 12
+    },
+    {
+      "jugadorId": "JUG-0646",
+      "equipoId": "EQ-027",
+      "apellido": "Apellido0646",
+      "partidosInternacionales": 178,
+      "golesInternacionales": 18
+    },
+    {
+      "jugadorId": "JUG-1008",
+      "equipoId": "EQ-042",
+      "apellido": "Apellido1008",
+      "partidosInternacionales": 178,
+      "golesInternacionales": 24
+    },
+    {
+      "jugadorId": "JUG-0620",
+      "equipoId": "EQ-026",
+      "apellido": "Apellido0620",
+      "partidosInternacionales": 177,
+      "golesInternacionales": 0
+    },
+    {
+      "jugadorId": "JUG-0982",
+      "equipoId": "EQ-041",
+      "apellido": "Apellido0982",
+      "partidosInternacionales": 177,
+      "golesInternacionales": 6
+    },
+    {
+      "jugadorId": "JUG-1344",
+      "equipoId": "EQ-056",
+      "apellido": "Apellido1344",
+      "partidosInternacionales": 177,
+      "golesInternacionales": 12
+    },
+    {
+      "jugadorId": "JUG-0956",
+      "equipoId": "EQ-040",
+      "apellido": "Apellido0956",
+      "partidosInternacionales": 176,
+      "golesInternacionales": 36
+    }
+  ]
+}
+{
+  "id": "Q05",
+  "objective": "Proyectar una ficha resumida de equipos sint├⌐ticos.",
+  "collection": "equipos",
+  "filter": {
+    "esDatoSintetico": true
+  },
+  "returnedFields": [
+    "codigo",
+    "nombre",
+    "confederacion"
+  ],
+  "relatedIndex": "No se agrega ├¡ndice: baja selectividad y colecci├│n de 64 documentos.",
+  "expected": "Cinco fichas resumidas, sin _id.",
+  "result": [
+    {
+      "codigo": "F01",
+      "nombre": "Seleccion Sintetica 01",
+      "confederacion": "AFC"
+    },
+    {
+      "codigo": "F02",
+      "nombre": "Seleccion Sintetica 02",
+      "confederacion": "CAF"
+    },
+    {
+      "codigo": "F03",
+      "nombre": "Seleccion Sintetica 03",
+      "confederacion": "CONCACAF"
+    },
+    {
+      "codigo": "F04",
+      "nombre": "Seleccion Sintetica 04",
+      "confederacion": "CONMEBOL"
+    },
+    {
+      "codigo": "F05",
+      "nombre": "Seleccion Sintetica 05",
+      "confederacion": "OFC"
+    }
+  ]
+}
+{
+  "id": "Q06",
+  "objective": "Paginar en forma estable el plantel de un equipo (p├ígina 2, tama├▒o 5).",
+  "collection": "jugadores",
+  "filter": {
+    "equipoId": "EQ-001"
+  },
+  "returnedFields": [
+    "jugadorId",
+    "apellido",
+    "nombre",
+    "posicion",
+    "numeroCamiseta"
+  ],
+  "relatedIndex": "idx_jugadores_equipo_nombre",
+  "expected": "Cinco jugadores despu├⌐s de omitir los primeros cinco.",
+  "result": [
+    {
+      "jugadorId": "JUG-0006",
+      "nombre": "Nombre0006",
+      "apellido": "Apellido0006",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 6
+    },
+    {
+      "jugadorId": "JUG-0007",
+      "nombre": "Nombre0007",
+      "apellido": "Apellido0007",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 7
+    },
+    {
+      "jugadorId": "JUG-0008",
+      "nombre": "Nombre0008",
+      "apellido": "Apellido0008",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 8
+    },
+    {
+      "jugadorId": "JUG-0009",
+      "nombre": "Nombre0009",
+      "apellido": "Apellido0009",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 9
+    },
+    {
+      "jugadorId": "JUG-0010",
+      "nombre": "Nombre0010",
+      "apellido": "Apellido0010",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 10
+    }
+  ]
+}
+{
+  "id": "Q07",
+  "objective": "Recuperar todos los jugadores pertenecientes a un equipo.",
+  "collection": "jugadores",
+  "filter": {
+    "equipoId": "EQ-002"
+  },
+  "returnedFields": [
+    "jugadorId",
+    "apellido",
+    "nombre",
+    "posicion",
+    "numeroCamiseta"
+  ],
+  "relatedIndex": "idx_jugadores_equipo_nombre",
+  "expected": "Los 24 integrantes del plantel, ordenados por apellido y nombre.",
+  "result": [
+    {
+      "jugadorId": "JUG-0025",
+      "nombre": "Nombre0025",
+      "apellido": "Apellido0025",
+      "posicion": "ARQUERO",
+      "numeroCamiseta": 1
+    },
+    {
+      "jugadorId": "JUG-0026",
+      "nombre": "Nombre0026",
+      "apellido": "Apellido0026",
+      "posicion": "ARQUERO",
+      "numeroCamiseta": 2
+    },
+    {
+      "jugadorId": "JUG-0027",
+      "nombre": "Nombre0027",
+      "apellido": "Apellido0027",
+      "posicion": "ARQUERO",
+      "numeroCamiseta": 3
+    },
+    {
+      "jugadorId": "JUG-0028",
+      "nombre": "Nombre0028",
+      "apellido": "Apellido0028",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 4
+    },
+    {
+      "jugadorId": "JUG-0029",
+      "nombre": "Nombre0029",
+      "apellido": "Apellido0029",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 5
+    },
+    {
+      "jugadorId": "JUG-0030",
+      "nombre": "Nombre0030",
+      "apellido": "Apellido0030",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 6
+    },
+    {
+      "jugadorId": "JUG-0031",
+      "nombre": "Nombre0031",
+      "apellido": "Apellido0031",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 7
+    },
+    {
+      "jugadorId": "JUG-0032",
+      "nombre": "Nombre0032",
+      "apellido": "Apellido0032",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 8
+    },
+    {
+      "jugadorId": "JUG-0033",
+      "nombre": "Nombre0033",
+      "apellido": "Apellido0033",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 9
+    },
+    {
+      "jugadorId": "JUG-0034",
+      "nombre": "Nombre0034",
+      "apellido": "Apellido0034",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 10
+    },
+    {
+      "jugadorId": "JUG-0035",
+      "nombre": "Nombre0035",
+      "apellido": "Apellido0035",
+      "posicion": "DEFENSOR",
+      "numeroCamiseta": 11
+    },
+    {
+      "jugadorId": "JUG-0036",
+      "nombre": "Nombre0036",
+      "apellido": "Apellido0036",
+      "posicion": "MEDIOCAMPISTA",
+      "numeroCamiseta": 12
+    },
+    {
+      "jugadorId": "JUG-0037",
+      "nombre": "Nombre0037",
+      "apellido": "Apellido0037",
+      "posicion": "MEDIOCAMPISTA",
+      "numeroCamiseta": 13
+    },
+    {
+      "jugadorId": "JUG-0038",
+      "nombre": "Nombre0038",
+      "apellido": "Apellido0038",
+      "posicion": "MEDIOCAMPISTA",
+      "numeroCamiseta": 14
+    },
+    {
+      "jugadorId": "JUG-0039",
+      "nombre": "Nombre0039",
+      "apellido": "Apellido0039",
+      "posicion": "MEDIOCAMPISTA",
+      "numeroCamiseta": 15
+    },
+    {
+      "jugadorId": "JUG-0040",
+      "nombre": "Nombre0040",
+      "apellido": "Apellido0040",
+      "posicion": "MEDIOCAMPISTA",
+      "numeroCamiseta": 16
+    },
+    {
+      "jugadorId": "JUG-0041",
+      "nombre": "Nombre0041",
+      "apellido": "Apellido0041",
+      "posicion": "MEDIOCAMPISTA",
+      "numeroCamiseta": 17
+    },
+    {
+      "jugadorId": "JUG-0042",
+      "nombre": "Nombre0042",
+      "apellido": "Apellido0042",
+      "posicion": "MEDIOCAMPISTA",
+      "numeroCamiseta": 18
+    },
+    {
+      "jugadorId": "JUG-0043",
+      "nombre": "Nombre0043",
+      "apellido": "Apellido0043",
+      "posicion": "MEDIOCAMPISTA",
+      "numeroCamiseta": 19
+    },
+    {
+      "jugadorId": "JUG-0044",
+      "nombre": "Nombre0044",
+      "apellido": "Apellido0044",
+      "posicion": "DELANTERO",
+      "numeroCamiseta": 20
+    },
+    {
+      "jugadorId": "JUG-0045",
+      "nombre": "Nombre0045",
+      "apellido": "Apellido0045",
+      "posicion": "DELANTERO",
+      "numeroCamiseta": 21
+    },
+    {
+      "jugadorId": "JUG-0046",
+      "nombre": "Nombre0046",
+      "apellido": "Apellido0046",
+      "posicion": "DELANTERO",
+      "numeroCamiseta": 22
+    },
+    {
+      "jugadorId": "JUG-0047",
+      "nombre": "Nombre0047",
+      "apellido": "Apellido0047",
+      "posicion": "DELANTERO",
+      "numeroCamiseta": 23
+    },
+    {
+      "jugadorId": "JUG-0048",
+      "nombre": "Nombre0048",
+      "apellido": "Apellido0048",
+      "posicion": "DELANTERO",
+      "numeroCamiseta": 24
+    }
+  ]
+}
+{
+  "id": "Q08",
+  "objective": "Agregar la composici├│n y experiencia del plantel por posici├│n.",
+  "collection": "jugadores",
+  "filter": {
+    "equipoId": "EQ-001"
+  },
+  "returnedFields": [
+    "posicion",
+    "cantidad",
+    "promedioPartidos",
+    "promedioAlturaCm"
+  ],
+  "relatedIndex": "idx_jugadores_equipo_nombre (prefijo equipoId)",
+  "expected": "Un resumen por cada posici├│n presente en el plantel.",
+  "result": [
+    {
+      "cantidad": 3,
+      "posicion": "ARQUERO",
+      "promedioPartidos": 14,
+      "promedioAlturaCm": 190
+    },
+    {
+      "cantidad": 8,
+      "posicion": "DEFENSOR",
+      "promedioPartidos": 52.5,
+      "promedioAlturaCm": 184.25
+    },
+    {
+      "cantidad": 5,
+      "posicion": "DELANTERO",
+      "promedioPartidos": 154,
+      "promedioAlturaCm": 181.2
+    },
+    {
+      "cantidad": 8,
+      "posicion": "MEDIOCAMPISTA",
+      "promedioPartidos": 108.5,
+      "promedioAlturaCm": 175.88
+    }
+  ]
+}
+{
+  "id": "Q09",
+  "objective": "Consolidar equipo y resumen de su plantel mediante $lookup.",
+  "collection": "equipos + jugadores",
+  "filter": {
+    "confederacion": "AFC"
+  },
+  "returnedFields": [
+    "equipoId",
+    "nombre",
+    "cantidadJugadores",
+    "promedioPartidos"
+  ],
+  "relatedIndex": "idx_equipos_confederacion_ranking; idx_jugadores_equipo_nombre",
+  "expected": "Resumen de los primeros cinco equipos AFC.",
+  "result": [
+    {
+      "equipoId": "EQ-001",
+      "nombre": "Seleccion Sintetica 01",
+      "cantidadJugadores": 24,
+      "promedioPartidos": 87.5
+    },
+    {
+      "equipoId": "EQ-007",
+      "nombre": "Seleccion Sintetica 07",
+      "cantidadJugadores": 24,
+      "promedioPartidos": 92.46
+    },
+    {
+      "equipoId": "EQ-013",
+      "nombre": "Seleccion Sintetica 13",
+      "cantidadJugadores": 24,
+      "promedioPartidos": 97.42
+    },
+    {
+      "equipoId": "EQ-019",
+      "nombre": "Seleccion Sintetica 19",
+      "cantidadJugadores": 24,
+      "promedioPartidos": 87.29
+    },
+    {
+      "equipoId": "EQ-025",
+      "nombre": "Seleccion Sintetica 25",
+      "cantidadJugadores": 24,
+      "promedioPartidos": 92.25
+    }
+  ]
+}
+{
+  "id": "Q10",
+  "objective": "Detectar jugadores cuya referencia no corresponde a un equipo existente.",
+  "collection": "jugadores + equipos",
+  "filter": {
+    "equipo vinculado": "inexistente"
+  },
+  "returnedFields": [
+    "jugadorId",
+    "equipoId"
+  ],
+  "relatedIndex": "idx_jugadores_equipo_nombre; uq_equipos_equipoId",
+  "expected": "Arreglo vac├¡o.",
+  "result": []
+}
+{
+  "id": "Q11",
+  "objective": "Detectar equipos cuyo plantel no tenga exactamente 24 jugadores.",
+  "collection": "equipos + jugadores",
+  "filter": {
+    "cantidadJugadores": {
+      "$ne": 24
+    }
+  },
+  "returnedFields": [
+    "equipoId",
+    "cantidadJugadores"
+  ],
+  "relatedIndex": "uq_equipos_equipoId; idx_jugadores_equipo_nombre",
+  "expected": "Arreglo vac├¡o para el conjunto can├│nico.",
+  "result": []
+}
+{
+  "id": "Q12",
+  "objective": "Contar equipos y jugadores por confederaci├│n.",
+  "collection": "equipos + jugadores",
+  "filter": {},
+  "returnedFields": [
+    "confederacion",
+    "equipos",
+    "jugadores"
+  ],
+  "relatedIndex": "idx_equipos_confederacion_ranking; idx_jugadores_equipo_nombre",
+  "expected": "Distribuci├│n consolidada de las seis confederaciones.",
+  "result": [
+    {
+      "equipos": 11,
+      "jugadores": 264,
+      "confederacion": "AFC"
+    },
+    {
+      "equipos": 11,
+      "jugadores": 264,
+      "confederacion": "CAF"
+    },
+    {
+      "equipos": 11,
+      "jugadores": 264,
+      "confederacion": "CONCACAF"
+    },
+    {
+      "equipos": 11,
+      "jugadores": 264,
+      "confederacion": "CONMEBOL"
+    },
+    {
+      "equipos": 10,
+      "jugadores": 240,
+      "confederacion": "OFC"
+    },
+    {
+      "equipos": 10,
+      "jugadores": 240,
+      "confederacion": "UEFA"
+    }
+  ]
+}
+{
+  "script": "05_queries.js",
+  "queriesExecuted": 12,
+  "status": "OK"
+}

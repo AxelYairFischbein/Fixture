@@ -1,0 +1,147 @@
+﻿{
+  "id": "OP01",
+  "objective": "Insertar un equipo temporal v├ílido.",
+  "collection": "equipos",
+  "filter": {
+    "equipoId": "EQ-900"
+  },
+  "returnedFields": [
+    "acknowledged",
+    "insertedId"
+  ],
+  "relatedIndex": "uq_equipos_equipoId",
+  "result": {
+    "acknowledged": true,
+    "insertedId": "equipo:EQ-900"
+  }
+}
+{
+  "id": "OP02",
+  "objective": "Insertar un jugador temporal luego de comprobar que su equipo existe.",
+  "collection": "jugadores",
+  "filter": {
+    "jugadorId": "JUG-9000",
+    "equipoId": "EQ-900"
+  },
+  "returnedFields": [
+    "acknowledged",
+    "insertedId"
+  ],
+  "relatedIndex": "uq_jugadores_jugadorId; uq_jugadores_equipo_camiseta",
+  "result": {
+    "acknowledged": true,
+    "insertedId": "jugador:JUG-9000"
+  }
+}
+{
+  "id": "OP03",
+  "objective": "Actualizar el estado del equipo temporal.",
+  "collection": "equipos",
+  "filter": {
+    "equipoId": "EQ-900"
+  },
+  "returnedFields": [
+    "matchedCount",
+    "modifiedCount"
+  ],
+  "relatedIndex": "uq_equipos_equipoId",
+  "result": {
+    "acknowledged": true,
+    "insertedId": null,
+    "matchedCount": 1,
+    "modifiedCount": 1,
+    "upsertedCount": 0
+  }
+}
+{
+  "id": "OP04",
+  "objective": "Actualizar estad├¡sticas del jugador sin cambiar su referencia al equipo.",
+  "collection": "jugadores",
+  "filter": {
+    "jugadorId": "JUG-9000"
+  },
+  "returnedFields": [
+    "matchedCount",
+    "modifiedCount"
+  ],
+  "relatedIndex": "uq_jugadores_jugadorId",
+  "result": {
+    "acknowledged": true,
+    "insertedId": null,
+    "matchedCount": 1,
+    "modifiedCount": 1,
+    "upsertedCount": 0
+  }
+}
+{
+  "id": "OP05",
+  "objective": "Comprobar las actualizaciones y la relaci├│n del jugador temporal.",
+  "collection": "jugadores + equipos",
+  "filter": {
+    "jugadorId": "JUG-9000"
+  },
+  "returnedFields": [
+    "jugadorId",
+    "estad├¡sticas",
+    "equipoId",
+    "equipoNombre",
+    "equipoEstado"
+  ],
+  "relatedIndex": "uq_jugadores_jugadorId; uq_equipos_equipoId",
+  "result": [
+    {
+      "jugadorId": "JUG-9000",
+      "nombre": "Jugador",
+      "apellido": "Temporal",
+      "partidosInternacionales": 6,
+      "golesInternacionales": 2,
+      "equipoId": "EQ-900",
+      "equipoNombre": "Equipo Temporal de Demostracion",
+      "equipoEstado": "CONFIRMADO"
+    }
+  ]
+}
+{
+  "id": "OP06",
+  "objective": "Eliminar de forma controlada el jugador temporal.",
+  "collection": "jugadores",
+  "filter": {
+    "jugadorId": "JUG-9000",
+    "origen": "demostracion-controlada"
+  },
+  "returnedFields": [
+    "deletedCount"
+  ],
+  "relatedIndex": "uq_jugadores_jugadorId",
+  "result": {
+    "acknowledged": true,
+    "deletedCount": 1
+  }
+}
+{
+  "id": "OP07",
+  "objective": "Eliminar el equipo temporal despu├⌐s de eliminar al jugador relacionado.",
+  "collection": "equipos",
+  "filter": {
+    "equipoId": "EQ-900",
+    "origen": "demostracion-controlada"
+  },
+  "returnedFields": [
+    "deletedCount"
+  ],
+  "relatedIndex": "uq_equipos_equipoId",
+  "result": {
+    "acknowledged": true,
+    "deletedCount": 1
+  }
+}
+{
+  "script": "04_demo_crud.js",
+  "finalCounts": {
+    "teams": 64,
+    "players": 1536,
+    "temporaryTeams": 0,
+    "temporaryPlayers": 0
+  },
+  "status": "OK"
+}

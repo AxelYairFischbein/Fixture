@@ -1,0 +1,5 @@
+﻿Client=29.7.2 Server=29.7.2
+Docker Compose version v5.5.0
+Intento 1: health=healthy
+NAME                  IMAGE                                            COMMAND                  SERVICE   CREATED       STATUS                 PORTS
+fixture2030-mongodb   mongodb/mongodb-community-server:8.0-ubi8-slim   "/usr/local/bin/dockΓÇª"   mongodb   3 hours ago   Up 2 hours (healthy)   0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp

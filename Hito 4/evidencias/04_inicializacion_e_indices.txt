@@ -1,0 +1,135 @@
+﻿{
+  "script": "01_collections.js",
+  "database": "fixture2030",
+  "result": [
+    {
+      "collection": "equipos",
+      "action": "already_exists"
+    },
+    {
+      "collection": "jugadores",
+      "action": "already_exists"
+    }
+  ]
+}
+{
+  "script": "02_validators.js",
+  "database": "fixture2030",
+  "validationLevel": "strict",
+  "validationAction": "error",
+  "result": [
+    {
+      "collection": "equipos",
+      "action": "validator_updated"
+    },
+    {
+      "collection": "jugadores",
+      "action": "validator_updated"
+    }
+  ]
+}
+{
+  "script": "03_indexes.js",
+  "created": {
+    "equipos": [
+      "uq_equipos_equipoId",
+      "uq_equipos_codigo",
+      "idx_equipos_confederacion_ranking"
+    ],
+    "jugadores": [
+      "uq_jugadores_jugadorId",
+      "uq_jugadores_equipo_camiseta",
+      "idx_jugadores_equipo_nombre",
+      "idx_jugadores_posicion_partidos",
+      "idx_jugadores_nacionalidad_altura"
+    ]
+  },
+  "equipos": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "equipoId": 1
+      },
+      "name": "uq_equipos_equipoId",
+      "unique": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "codigo": 1
+      },
+      "name": "uq_equipos_codigo",
+      "unique": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "confederacion": 1,
+        "rankingReferencia": 1,
+        "equipoId": 1
+      },
+      "name": "idx_equipos_confederacion_ranking"
+    }
+  ],
+  "jugadores": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "jugadorId": 1
+      },
+      "name": "uq_jugadores_jugadorId",
+      "unique": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "equipoId": 1,
+        "numeroCamiseta": 1
+      },
+      "name": "uq_jugadores_equipo_camiseta",
+      "unique": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "equipoId": 1,
+        "apellido": 1,
+        "nombre": 1,
+        "jugadorId": 1
+      },
+      "name": "idx_jugadores_equipo_nombre"
+    },
+    {
+      "v": 2,
+      "key": {
+        "posicion": 1,
+        "partidosInternacionales": -1,
+        "jugadorId": 1
+      },
+      "name": "idx_jugadores_posicion_partidos"
+    },
+    {
+      "v": 2,
+      "key": {
+        "nacionalidadCodigo": 1,
+        "alturaCm": -1,
+        "jugadorId": 1
+      },
+      "name": "idx_jugadores_nacionalidad_altura"
+    }
+  ]
+}

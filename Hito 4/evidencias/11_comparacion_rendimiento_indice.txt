@@ -1,0 +1,62 @@
+﻿{
+  "script": "06_compare_index.js",
+  "objective": "Filtrar jugadores por nacionalidad y altura con orden estable.",
+  "collection": "jugadores",
+  "filter": {
+    "nacionalidadCodigo": "F01",
+    "alturaCm": {
+      "$gte": 180
+    }
+  },
+  "returnedFields": [
+    "jugadorId",
+    "apellido",
+    "alturaCm"
+  ],
+  "sort": {
+    "alturaCm": -1,
+    "jugadorId": 1
+  },
+  "performanceIndex": {
+    "name": "idx_jugadores_nacionalidad_altura",
+    "key": {
+      "nacionalidadCodigo": 1,
+      "alturaCm": -1,
+      "jugadorId": 1
+    },
+    "essentialForIntegrity": false
+  },
+  "before": {
+    "winningPlanRootStage": "SORT",
+    "winningPlanStages": [
+      "SORT",
+      "PROJECTION_SIMPLE",
+      "COLLSCAN"
+    ],
+    "nReturned": 15,
+    "totalDocsExamined": 1536,
+    "totalKeysExamined": 0,
+    "executionTimeMillis": 0,
+    "indexesUsed": []
+  },
+  "after": {
+    "winningPlanRootStage": "PROJECTION_SIMPLE",
+    "winningPlanStages": [
+      "PROJECTION_SIMPLE",
+      "FETCH",
+      "IXSCAN"
+    ],
+    "nReturned": 15,
+    "totalDocsExamined": 15,
+    "totalKeysExamined": 15,
+    "executionTimeMillis": 0,
+    "indexesUsed": [
+      "idx_jugadores_nacionalidad_altura"
+    ]
+  },
+  "observedDifference": {
+    "docsExaminedReduction": 1521,
+    "keysExaminedIncrease": 15
+  },
+  "status": "OK"
+}

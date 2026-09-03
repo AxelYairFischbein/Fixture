@@ -1,0 +1,4 @@
+﻿Evidencias generadas: 2026-09-02T19:16:37.3089060-03:00
+Base: fixture2030
+Estado: todas las etapas finalizaron sin error
+Advertencia: este procedimiento nunca ejecuta docker compose down -v

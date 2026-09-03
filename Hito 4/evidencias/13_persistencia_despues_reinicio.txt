@@ -1,0 +1,377 @@
+﻿Intento 1: health=starting
+Intento 2: health=starting
+Intento 3: health=starting
+Intento 4: health=healthy
+{
+  "afterRestart": true,
+  "ping": {
+    "ok": 1
+  },
+  "version": "8.0.29"
+}
+{
+  "script": "07_verify_integrity.js",
+  "counts": {
+    "teams": 64,
+    "players": 1536
+  },
+  "duplicates": {
+    "equipoId": 0,
+    "codigoEquipo": 0,
+    "jugadorId": 0,
+    "camisetaPorEquipo": 0
+  },
+  "orphanPlayers": 0,
+  "teamsWithWrongRosterSize": 0,
+  "missingCriticalFields": {
+    "teams": 0,
+    "players": 0
+  },
+  "validators": [
+    {
+      "name": "equipos",
+      "validationLevel": "strict",
+      "validationAction": "error",
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "title": "Equipo del Fixture 2030",
+          "additionalProperties": false,
+          "required": [
+            "_id",
+            "equipoId",
+            "codigo",
+            "nombre",
+            "confederacion",
+            "region",
+            "rankingReferencia",
+            "sedeBase",
+            "anioFundacion",
+            "participacionesMundiales",
+            "titulosMundiales",
+            "estado",
+            "esDatoSintetico",
+            "origen",
+            "creadoEn",
+            "actualizadoEn"
+          ],
+          "properties": {
+            "_id": {
+              "bsonType": "string",
+              "pattern": "^equipo:EQ-[0-9]{3}$",
+              "description": "Identificador t├⌐cnico estable."
+            },
+            "equipoId": {
+              "bsonType": "string",
+              "pattern": "^EQ-[0-9]{3}$",
+              "description": "Identificador de negocio estable."
+            },
+            "codigo": {
+              "bsonType": "string",
+              "pattern": "^[A-Z0-9]{3}$",
+              "description": "C├│digo corto ├║nico del equipo."
+            },
+            "nombre": {
+              "bsonType": "string",
+              "minLength": 3,
+              "maxLength": 100
+            },
+            "confederacion": {
+              "enum": [
+                "AFC",
+                "CAF",
+                "CONCACAF",
+                "CONMEBOL",
+                "OFC",
+                "UEFA"
+              ]
+            },
+            "region": {
+              "enum": [
+                "AFRICA",
+                "AMERICAS",
+                "ASIA_PACIFICO",
+                "EUROPA"
+              ]
+            },
+            "rankingReferencia": {
+              "bsonType": "int",
+              "minimum": 1,
+              "maximum": 250
+            },
+            "sedeBase": {
+              "bsonType": "object",
+              "additionalProperties": false,
+              "required": [
+                "ciudad",
+                "pais"
+              ],
+              "properties": {
+                "ciudad": {
+                  "bsonType": "string",
+                  "minLength": 2,
+                  "maxLength": 100
+                },
+                "pais": {
+                  "bsonType": "string",
+                  "minLength": 2,
+                  "maxLength": 100
+                }
+              }
+            },
+            "anioFundacion": {
+              "bsonType": "int",
+              "minimum": 1800,
+              "maximum": 2030
+            },
+            "participacionesMundiales": {
+              "bsonType": "int",
+              "minimum": 0,
+              "maximum": 50
+            },
+            "titulosMundiales": {
+              "bsonType": "int",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "estado": {
+              "enum": [
+                "PRESELECCIONADO",
+                "CONFIRMADO",
+                "RETIRADO"
+              ]
+            },
+            "esDatoSintetico": {
+              "bsonType": "bool"
+            },
+            "origen": {
+              "bsonType": "string",
+              "minLength": 3,
+              "maxLength": 80
+            },
+            "creadoEn": {
+              "bsonType": "date"
+            },
+            "actualizadoEn": {
+              "bsonType": "date"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "jugadores",
+      "validationLevel": "strict",
+      "validationAction": "error",
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "title": "Jugador del Fixture 2030",
+          "additionalProperties": false,
+          "required": [
+            "_id",
+            "jugadorId",
+            "equipoId",
+            "nombre",
+            "apellido",
+            "fechaNacimiento",
+            "nacionalidadCodigo",
+            "posicion",
+            "numeroCamiseta",
+            "pieHabil",
+            "alturaCm",
+            "partidosInternacionales",
+            "golesInternacionales",
+            "estadoPlantel",
+            "esDatoSintetico",
+            "origen",
+            "creadoEn",
+            "actualizadoEn"
+          ],
+          "properties": {
+            "_id": {
+              "bsonType": "string",
+              "pattern": "^jugador:JUG-[0-9]{4}$",
+              "description": "Identificador t├⌐cnico estable."
+            },
+            "jugadorId": {
+              "bsonType": "string",
+              "pattern": "^JUG-[0-9]{4}$",
+              "description": "Identificador de negocio estable."
+            },
+            "equipoId": {
+              "bsonType": "string",
+              "pattern": "^EQ-[0-9]{3}$",
+              "description": "Referencia l├│gica a equipos.equipoId."
+            },
+            "nombre": {
+              "bsonType": "string",
+              "minLength": 2,
+              "maxLength": 80
+            },
+            "apellido": {
+              "bsonType": "string",
+              "minLength": 2,
+              "maxLength": 80
+            },
+            "fechaNacimiento": {
+              "bsonType": "date"
+            },
+            "nacionalidadCodigo": {
+              "bsonType": "string",
+              "pattern": "^[A-Z0-9]{3}$"
+            },
+            "posicion": {
+              "enum": [
+                "ARQUERO",
+                "DEFENSOR",
+                "MEDIOCAMPISTA",
+                "DELANTERO"
+              ]
+            },
+            "numeroCamiseta": {
+              "bsonType": "int",
+              "minimum": 1,
+              "maximum": 99
+            },
+            "pieHabil": {
+              "enum": [
+                "DERECHO",
+                "IZQUIERDO",
+                "AMBIDIESTRO"
+              ]
+            },
+            "alturaCm": {
+              "bsonType": "int",
+              "minimum": 150,
+              "maximum": 220
+            },
+            "partidosInternacionales": {
+              "bsonType": "int",
+              "minimum": 0,
+              "maximum": 300
+            },
+            "golesInternacionales": {
+              "bsonType": "int",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "estadoPlantel": {
+              "enum": [
+                "CONVOCADO",
+                "RESERVA",
+                "LESIONADO",
+                "SUSPENDIDO"
+              ]
+            },
+            "esDatoSintetico": {
+              "bsonType": "bool"
+            },
+            "origen": {
+              "bsonType": "string",
+              "minLength": 3,
+              "maxLength": 80
+            },
+            "creadoEn": {
+              "bsonType": "date"
+            },
+            "actualizadoEn": {
+              "bsonType": "date"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "indexes": {
+    "teams": [
+      {
+        "v": 2,
+        "key": {
+          "_id": 1
+        },
+        "name": "_id_"
+      },
+      {
+        "v": 2,
+        "key": {
+          "equipoId": 1
+        },
+        "name": "uq_equipos_equipoId",
+        "unique": true
+      },
+      {
+        "v": 2,
+        "key": {
+          "codigo": 1
+        },
+        "name": "uq_equipos_codigo",
+        "unique": true
+      },
+      {
+        "v": 2,
+        "key": {
+          "confederacion": 1,
+          "rankingReferencia": 1,
+          "equipoId": 1
+        },
+        "name": "idx_equipos_confederacion_ranking"
+      }
+    ],
+    "players": [
+      {
+        "v": 2,
+        "key": {
+          "_id": 1
+        },
+        "name": "_id_"
+      },
+      {
+        "v": 2,
+        "key": {
+          "jugadorId": 1
+        },
+        "name": "uq_jugadores_jugadorId",
+        "unique": true
+      },
+      {
+        "v": 2,
+        "key": {
+          "equipoId": 1,
+          "numeroCamiseta": 1
+        },
+        "name": "uq_jugadores_equipo_camiseta",
+        "unique": true
+      },
+      {
+        "v": 2,
+        "key": {
+          "equipoId": 1,
+          "apellido": 1,
+          "nombre": 1,
+          "jugadorId": 1
+        },
+        "name": "idx_jugadores_equipo_nombre"
+      },
+      {
+        "v": 2,
+        "key": {
+          "posicion": 1,
+          "partidosInternacionales": -1,
+          "jugadorId": 1
+        },
+        "name": "idx_jugadores_posicion_partidos"
+      },
+      {
+        "v": 2,
+        "key": {
+          "nacionalidadCodigo": 1,
+          "alturaCm": -1,
+          "jugadorId": 1
+        },
+        "name": "idx_jugadores_nacionalidad_altura"
+      }
+    ]
+  },
+  "status": "OK"
+}
