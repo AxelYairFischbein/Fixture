@@ -1,20 +1,20 @@
 # Grupo 13 - Hito 4: Decisiones Documentales del Fixture 2030
 
-## Alcance y fuentes
+## Alcance del módulo
 
-El módulo implementa exclusivamente la persistencia documental de equipos y jugadores. Se diseñó a partir de los requisitos técnicos específicos del Hito 4, la Clase 4 y su transcripción, la devolución docente del Hito 3 y las decisiones de los Hitos 2 y 3, en ese orden de prioridad. No se utilizó la guía histórica de planificación para determinar alcance o numeración.
+El módulo implementa exclusivamente la persistencia documental de equipos y jugadores. El diseño responde a los requisitos técnicos del Hito 4 y mantiene continuidad con las decisiones de modelado y arquitectura establecidas en los Hitos 2 y 3.
 
 El entorno ejecutado es MongoDB Community Server 8.0 en un único contenedor local. La solución no incorpora API, frontend, Mongo Express, Mongoose, microservicios ni otros motores.
 
-### Evolución del Compose existente
+## Ambiente de ejecución
 
-No se reemplazó el diseño inicial: se conservaron el servicio `mongodb`, la imagen Community Server 8.0 UBI, el nombre `fixture2030-mongodb`, el puerto 27017, la base `fixture2030`, las credenciales locales predeterminadas y el volumen `mongodb_data`. Se agregaron sustitución opcional de puerto/credenciales, montaje de `scripts/` en modo sólo lectura, healthcheck con `mongosh`, período de gracia y política `unless-stopped`. Esta última permite que una detención manual continúe siendo intencional después de reiniciar Docker, sin perder el reinicio automático ante fallos no solicitados.
+El ambiente utiliza un servicio `mongodb`, basado en MongoDB Community Server 8.0 UBI, con la base `fixture2030`, el puerto 27017 y el volumen persistente `mongodb_data`. La configuración admite valores locales de puerto y credenciales, monta `scripts/` en modo sólo lectura e incorpora un healthcheck con `mongosh`, período de gracia y política `unless-stopped`. Esta combinación ofrece una ejecución reproducible, control de disponibilidad y reinicio automático ante fallos no solicitados.
 
 ## Relación con el Hito 2
 
 La matriz del Hito 2 asignó **equipos y jugadores** al modelo documental/MongoDB con 4,35/5. Los criterios decisivos fueron consultas de perfiles como unidad, predominio de lectura, flexibilidad de atributos deportivos y escalabilidad. Este hito materializa esa selección mediante documentos validados, consultas por identificador y atributos de negocio, índices secundarios y una carga de 64 equipos y 1.536 jugadores.
 
-El trade-off ya identificado en el Hito 2 se conserva: MongoDB no es la herramienta elegida para recorridos deportivos complejos. Aquí sólo se modela la pertenencia inmediata equipo-jugador; las relaciones partido-jugador-equipo y eventos siguen fuera de este módulo.
+MongoDB no se utiliza para recorridos deportivos complejos. En este módulo se modela la pertenencia inmediata equipo-jugador; las relaciones partido-jugador-equipo y los eventos permanecen fuera de su responsabilidad.
 
 ## Relación con el Hito 3
 
@@ -28,11 +28,11 @@ El Hito 3 definió una arquitectura políglota y separó responsabilidades. Este
 
 La topología multirregional del Hito 3 es conceptual. Este Hito 4 sólo necesita un ambiente local funcional y por eso no instala replica set, sharding ni múltiples nodos. Una futura distribución deberá validar latencia, carga y políticas de consistencia antes de configurar esos componentes.
 
-## Corrección aplicada a partir de la devolución docente
+## Criterios de consistencia para MongoDB
 
-La notación genérica N/R/W del Hito 3 no se reutiliza para MongoDB. Se reserva expresamente para Cassandra. Para una futura arquitectura MongoDB se habla en términos propios del producto: replica set, nodo primario y secundarios, confirmación de escritura por mayoría y preferencias/concerns de lectura acordes con la última versión confirmada.
+Las decisiones de consistencia se expresan mediante conceptos propios de MongoDB, como réplica set, nodo primario y nodos secundarios, confirmación de escritura por mayoría y preferencias o concerns de lectura acordes con la última versión confirmada.
 
-Nada de lo anterior se presenta como implementado. El contenedor local actual es un nodo standalone, sin alta disponibilidad. En producción, una operación oficial podría requerir confirmación de la mayoría de réplicas; durante una partición, las escrituras sin mayoría deberían limitarse si prevalece la consistencia. El diseño y sus métricas continúan siendo condicionantes conceptuales y decisiones pendientes.
+El ambiente actual se ejecuta como un nodo standalone, sin alta disponibilidad. En una eventual implementación distribuida, una operación oficial podría requerir la confirmación de la mayoría de las réplicas. Durante una partición, las escrituras sin mayoría deberían limitarse si se prioriza la consistencia. Estas políticas y sus métricas permanecen como decisiones pendientes.
 
 ## Alternativas de modelado
 
@@ -44,7 +44,7 @@ Se descartó porque los jugadores se consultan y actualizan de forma independien
 
 ### Colecciones separadas con referencias
 
-Cada equipo y cada jugador es un documento independiente. `jugadores.equipoId` referencia lógicamente a `equipos.equipoId`. Permite buscar y paginar jugadores directamente, actualizar una ficha sin reescribir un equipo completo y sostener planteles que crezcan. El costo es que MongoDB no implementa claves foráneas: la integridad debe controlarse en las escrituras y verificarse con `$lookup`.
+Cada equipo y cada jugador se representa como un documento independiente. El campo `jugadores.equipoId` establece una referencia lógica con `equipos.equipoId`. Esta estructura permite buscar y paginar jugadores directamente, actualizar sus fichas sin reescribir el documento completo del equipo y acompañar el crecimiento de los planteles. Como MongoDB no implementa claves foráneas, la integridad de la relación debe controlarse durante las escrituras y verificarse mediante `$lookup`.
 
 ### Estrategia híbrida
 
@@ -52,7 +52,7 @@ Se evaluó guardar jugadores separados y, además, un resumen o snapshot del pla
 
 ### Decisión
 
-Se eligieron **colecciones separadas con referencias**. Los subdocumentos se usan sólo donde existe propiedad y ciclo de vida conjunto —por ejemplo, `sedeBase` dentro de un equipo—, no para duplicar jugadores.
+Se eligieron **colecciones separadas con referencias**. Los subdocumentos se usan sólo donde existe propiedad y ciclo de vida conjunto, por ejemplo, `sedeBase` dentro de un equipo, no para duplicar jugadores.
 
 ## Colecciones y validaciones
 
@@ -77,7 +77,7 @@ Campos críticos: `_id`, `jugadorId`, `equipoId`, nombre, apellido, fecha de nac
 - `posicion`: arquero, defensor, mediocampista o delantero.
 - camiseta: entero entre 1 y 99.
 - altura: entero entre 150 y 220 cm.
-- partidos: entero entre 0 y 300; goles entre 0 y 250.
+- Los partidos deben expresarse con un número entero entre 0 y 300, y los goles con un número entero entre 0 y 250.
 - `estadoPlantel`: convocado, reserva, lesionado o suspendido.
 
 Las pruebas negativas insertan documentos con campos ausentes/ranking fuera de rango y posición inválida. MongoDB los rechazó con código 121 y no quedaron residuos.
@@ -101,12 +101,12 @@ La primera ejecución registrada produjo 64 y 1.536 `upserted`. La segunda encon
 
 MongoDB garantiza atomicidad a nivel de documento para las actualizaciones usadas. La relación entre colecciones no tiene una restricción de clave foránea nativa. Para compensarlo:
 
-1. el alta de jugador de demostración comprueba que el equipo exista;
-2. la carga crea equipos antes de jugadores;
-3. los índices únicos evitan identificadores y camisetas duplicadas;
+1. El alta de jugador de demostración comprueba que el equipo exista;
+2. La carga crea equipos antes de jugadores;
+3. Los índices únicos evitan identificadores y camisetas duplicadas;
 4. `07_verify_integrity.js` cruza las colecciones con `$lookup` y exige cero huérfanos;
-5. el mismo verificador exige 24 jugadores por equipo y campos críticos presentes;
-6. al borrar datos temporales se elimina primero el jugador y luego el equipo.
+5. El mismo verificador exige 24 jugadores por equipo y campos críticos presentes;
+6. Al borrar datos temporales se elimina primero el jugador y luego el equipo.
 
 El standalone local no permite demostrar confirmaciones entre réplicas. La persistencia que sí corresponde al hito se verifica reiniciando el contenedor sin quitar el volumen y repitiendo todos los controles.
 
@@ -114,14 +114,14 @@ El standalone local no permite demostrar confirmaciones entre réplicas. La pers
 
 | Índice | Consulta asociada y orden | Beneficio esperado | Costo aceptado |
 |---|---|---|---|
-| `uq_equipos_equipoId` `{equipoId: 1}` | Q01 y referencias `$lookup`; igualdad por ID. | Unicidad y acceso directo. | Una clave por equipo y validación en escritura. |
-| `uq_equipos_codigo` `{codigo: 1}` | Identificación abreviada y control de duplicados. | Código inequívoco. | Una clave por equipo. |
-| `idx_equipos_confederacion_ranking` `{confederacion: 1, rankingReferencia: 1, equipoId: 1}` | Q03/Q09: igualdad, luego rango/orden, finalmente desempate. | Evita ordenar fuera del índice y estabiliza páginas. | Espacio y actualización ante cambios de ranking. |
-| `uq_jugadores_jugadorId` `{jugadorId: 1}` | Q02 y CRUD por ID. | Unicidad y acceso directo. | Una clave por jugador. |
-| `uq_jugadores_equipo_camiseta` `{equipoId: 1, numeroCamiseta: 1}` | Integridad del plantel. | Impide duplicar camisetas dentro de un equipo. | Control adicional en altas/cambios. |
-| `idx_jugadores_equipo_nombre` `{equipoId: 1, apellido: 1, nombre: 1, jugadorId: 1}` | Q06/Q07 y `$lookup`: equipo por igualdad y orden estable del plantel. | Filtra, ordena y pagina sin scan global. | Índice compuesto más ancho; afecta cambios de equipo/nombre. |
-| `idx_jugadores_posicion_partidos` `{posicion: 1, partidosInternacionales: -1, jugadorId: 1}` | Q04: igualdad, rango/orden descendente y desempate. | Top de jugadores por posición sin ordenamiento global. | Se actualiza al cambiar partidos. |
-| `idx_jugadores_nacionalidad_altura` `{nacionalidadCodigo: 1, alturaCm: -1, jugadorId: 1}` | P01: igualdad, rango/orden y desempate. | Reduce documentos examinados y elimina `COLLSCAN`. | Índice no esencial, tres campos y costo en escrituras; puede quitarse si P01 no es frecuente. |
+| `uq_equipos_equipoId {equipoId: 1}` | Q01 y referencias `$lookup`; igualdad por ID. | Unicidad y acceso directo. | Una clave por equipo y validación en escritura. |
+| `uq_equipos_codigo {codigo: 1}` | Identificación abreviada y control de duplicados. | Código inequívoco. | Una clave por equipo. |
+| `idx_equipos_confederacion_ranking {confederacion: 1, rankingReferencia: 1, equipoId: 1}` | Q03/Q09: igualdad, luego rango/orden, finalmente desempate. | Evita ordenar fuera del índice y estabiliza páginas. | Espacio y actualización ante cambios de ranking. |
+| `uq_jugadores_jugadorId {jugadorId: 1}` | Q02 y CRUD por ID. | Unicidad y acceso directo. | Una clave por jugador. |
+| `uq_jugadores_equipo_camiseta {equipoId: 1, numeroCamiseta: 1}` | Integridad del plantel. | Impide duplicar camisetas dentro de un equipo. | Control adicional en altas/cambios. |
+| `idx_jugadores_equipo_nombre {equipoId: 1, apellido: 1, nombre: 1, jugadorId: 1}` | Q06/Q07 y `$lookup`: equipo por igualdad y orden estable del plantel. | Filtra, ordena y pagina sin scan global. | Índice compuesto más ancho; afecta cambios de equipo/nombre. |
+| `idx_jugadores_posicion_partidos {posicion: 1, partidosInternacionales: -1, jugadorId: 1}` | Q04: igualdad, rango/orden descendente y desempate. | Top de jugadores por posición sin ordenamiento global. | Se actualiza al cambiar partidos. |
+| `idx_jugadores_nacionalidad_altura {nacionalidadCodigo: 1, alturaCm: -1, jugadorId: 1}` | P01: igualdad, rango/orden y desempate. | Reduce documentos examinados y elimina `COLLSCAN`. | Es un índice no esencial compuesto por tres campos que incrementa el costo de las escrituras. Puede eliminarse si la consulta P01 no se ejecuta con frecuencia. |
 
 No se creó índice para `esDatoSintetico`: todos los documentos canónicos comparten ese valor, por lo que es poco selectivo.
 
@@ -140,11 +140,11 @@ No se atribuye una mejora de tiempo porque MongoDB redondeó ambas ejecuciones a
 
 | Decisión | Alternativas consideradas | Elección | Justificación | Impacto esperado |
 |---|---|---|---|---|
-| Relación equipo-jugador | Embedding, referencias, híbrida. | Referencia `jugadores.equipoId`. | Actualización independiente, consulta global, orden y paginación de 1.536 jugadores. | Documentos acotados; requiere control explícito de huérfanos. |
+| Relación equipo-jugador | Embedding, referencias, híbrida. | Referencia `jugadores.equipoId`. | Actualización independiente, consulta global, orden y paginación de 1.536 jugadores. | Mantiene documentos de tamaño acotado y exige verificar explícitamente que no existan jugadores huérfanos. |
 | Validación documental | Sin esquema, validación parcial, `$jsonSchema` estricto. | `$jsonSchema` estricto y rechazo de errores. | Evita tipos inválidos, campos críticos ausentes y valores fuera de dominio. | Datos más confiables; cambios de esquema deben planificarse. |
 | Estrategia de identificadores | Sólo ObjectId, IDs de negocio, ambos. | `_id` técnico determinista más IDs de negocio únicos. | Estabilidad entre recargas e integración legible. | Upserts idempotentes y búsquedas inequívocas; leve redundancia. |
 | Índices principales | Sólo `_id`, índices simples, índices compuestos por patrón. | Únicos de identidad más compuestos Q03/Q04/Q06/Q07/P01. | Igualdad primero, rango/orden después y desempate final. | Menos scans/sorts; mayor almacenamiento y costo de escritura. |
-| Carga y actualización | `insertMany` ciego, init de una sola vez, `upsert` manual repetible. | Reemplazos deterministas con `upsert`. | Puede ejecutarse con volumen nuevo o existente sin duplicar. | Restauración canónica; reemplaza cambios manuales sobre IDs canónicos. |
+| Carga y actualización | `insertMany` ciego, init de una sola vez, `upsert` manual repetible. | Reemplazos deterministas con `upsert`. | Puede ejecutarse con volumen nuevo o existente sin duplicar. | La recarga restaura el conjunto de datos canónico y reemplaza los cambios manuales realizados sobre sus identificadores. |
 
 ## Trade-offs
 
@@ -157,10 +157,10 @@ No se atribuye una mejora de tiempo porque MongoDB redondeó ambas ejecuciones a
 ## Limitaciones y decisiones pendientes
 
 - Sustituir los datos sintéticos sólo cuando exista una fuente oficial y acordada de participantes/planteles 2030.
-- Definir una política de cambios de plantel y conservación histórica; este hito representa el estado actual.
+- Definir una política para gestionar los cambios de plantel y conservar su historial. El alcance de este hito contempla únicamente el estado actual.
 - Decidir si una interfaz futura usará paginación por cursor en lugar de `skip/limit` para volúmenes mucho mayores.
 - Medir carga real antes de conservar o quitar el índice P01.
-- Diseñar y probar replica set, concerns de lectura/escritura y eventual sharding sólo en un hito que lo requiera; no se simulan aquí.
+- El diseño y las pruebas de réplica set, concerns de lectura y escritura, y un eventual sharding quedan reservados para un hito que requiera esas capacidades. Estos componentes no forman parte del alcance actual.
 - Coordinar con Neo4j el identificador estable compartido sin trasladar al documento las relaciones complejas de partidos y eventos.
 
 ## Matriz de trazabilidad
@@ -182,15 +182,20 @@ Los comandos se ejecutan desde `Hito 4/`. `MONGO` abrevia `docker compose exec -
 | RF11 | `scripts/queries/05_queries.js` Q08-Q12 | Mismo comando de consultas | `10_consultas_y_agregaciones.txt` | Cumplido |
 | RF12 | `scripts/indexes/03_indexes.js`, `scripts/performance/06_compare_index.js` | `MONGO /workspace/scripts/performance/06_compare_index.js` | `11_comparacion_rendimiento_indice.txt` | Cumplido |
 | RF13 | `scripts/verification/generar_evidencias.ps1` y `.sh` | `./scripts/verification/generar_evidencias.ps1` | `evidencias/00...14_*.txt` | Cumplido |
+
+### Matriz de trazabilidad - requisitos no funcionales
+
+| Requisito | Archivo que lo implementa | Comando que lo verifica | Evidencia generada | Estado |
+|---|---|---|---|---|
 | RNF1 | `README.md`, generadores de evidencia | Seguir “Inicio desde cero” o ejecutar generador | `00_resumen_ejecucion.txt` | Cumplido |
 | RNF2 | `scripts/data/02_seed.js` | Verificador integral | `12_integridad_canonica_final.txt` | Cumplido: 64/1.536 |
 | RNF3 | Validadores, índices únicos y verificador | Verificador integral | `07_integridad_validadores_indices.txt`, `12_integridad_canonica_final.txt` | Cumplido: ceros |
 | RNF4 | Índices y `explain("executionStats")` | Comparador P01 | `11_comparacion_rendimiento_indice.txt` | Cumplido |
-| RNF5 | Este documento | Revisión de secciones Hito 2/Hito 3/corrección | Documento versionado | Cumplido |
+| RNF5 | Este documento | Revisión de trazabilidad con los Hitos 2 y 3 | Documento versionado | Cumplido |
 | RNF6 | Separación `init/validations/data/indexes/operations/queries/performance/verification/docs/evidencias` | `tree`/listado del directorio | Árbol en `README.md` | Cumplido |
 | RNF7 | Compose, volumen nombrado y scripts `mongosh` en contenedor | `docker compose config` | `01_docker_compose_config.txt` | Cumplido dentro de hosts compatibles con Docker |
 | RNF8 | Generador determinista y ejecución automatizada | Generador integral de evidencias | `00_resumen_ejecucion.txt` | Cumplido por automatización; no requiere carga manual |
 
-## Estado comprobado
+## Resultados de verificación
 
-La ejecución integral del 2 de septiembre de 2026 finalizó con MongoDB 8.0.29, contenedor `running/healthy`, 64 equipos, 1.536 jugadores, cero duplicados, cero huérfanos, cero planteles con cantidad distinta de 24 y cero campos críticos ausentes. Después de reiniciar el contenedor, el verificador volvió a informar `status: OK` con los mismos recuentos.
+Las pruebas de ejecución verificaron la disponibilidad de MongoDB, la persistencia posterior al reinicio y la integridad del conjunto de datos: 64 equipos, 1.536 jugadores, sin identificadores duplicados, jugadores huérfanos, planteles con una cantidad distinta de 24 jugadores ni campos críticos ausentes. Los resultados detallados se encuentran registrados en los archivos de evidencia del proyecto.

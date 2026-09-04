@@ -232,6 +232,6 @@ También se puede ejecutar `docker compose down`; elimina contenedor y red, pero
 - Se eligieron exactamente 1.536 jugadores para mantener continuidad con “más de 1.500” de los hitos previos y obtener 24 por cada uno de los 64 equipos.
 - El entorno es un único nodo local. No simula alta disponibilidad, sharding ni despliegue multirregional.
 - En una futura arquitectura MongoDB con réplicas, las escrituras oficiales deberían confirmarse por mayoría y las lecturas deberían usar una política coherente con los datos confirmados. Esta es una decisión conceptual pendiente, no una configuración implementada aquí.
-- La notación N/R/W no se aplica a MongoDB en este trabajo; queda reservada para Cassandra según la devolución docente.
+- La notación N/R/W se reserva para Cassandra. En MongoDB, las decisiones de consistencia se expresan mediante conceptos propios del motor.
 - MongoDB no garantiza por sí solo referencias entre colecciones. Los scripts de escritura y verificación cubren esa integridad dentro del alcance local.
 - No se incorporan API REST, interfaz gráfica, Mongo Express, Mongoose ni otros motores: el módulo conserva la responsabilidad documental de equipos y jugadores.
